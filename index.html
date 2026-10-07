@@ -701,6 +701,102 @@ body.locked{ overflow:hidden; height:100dvh; }
 }
 .toast.show{ opacity:1; transform:translate(-50%, 0); }
 
+/* =========================================================
+   GALERÍA
+   ========================================================= */
+.gallery{
+  position:relative;
+  background:var(--paper);
+  padding:20px 0 110px;
+  text-align:center;
+  color:var(--wax-dark);
+  overflow:hidden;
+}
+.gallery > *:not(.speckles){ position:relative; z-index:2; }
+.gal-intro{
+  font-family:var(--serif); font-style:italic; font-size:19px; color:#7d6448;
+  margin-top:8px;
+}
+.polaroids{ margin-top:36px; padding:0 8px; }
+.polaroid{
+  display:block; position:relative;
+  width:76%;
+  margin:-18px 0 0 var(--mx, 12%);
+  padding:11px 11px 46px;
+  background:#fffdf8;
+  border:0; cursor:zoom-in;
+  box-shadow:0 1px 2px rgba(0,0,0,.08), 0 16px 30px -14px rgba(74,10,21,.55);
+  transform:rotate(var(--r, 0deg));
+  transition:transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.polaroid:first-child{ margin-top:0; }
+.polaroid:nth-child(odd) { --mx:5%;  --r:-4.5deg; }
+.polaroid:nth-child(even){ --mx:19%; --r:4deg; }
+.polaroid:nth-child(3){ --r:-3deg; }
+.polaroid:nth-child(4){ --r:5deg; }
+.polaroid img{
+  display:block; width:100%; aspect-ratio:2/3; object-fit:cover;
+  background:#1a1214;
+}
+.polaroid::before{ /* cinta adhesiva */
+  content:''; position:absolute; top:-12px; left:50%;
+  width:96px; height:26px;
+  transform:translateX(-50%) rotate(calc(var(--r) * -1.6));
+  background:linear-gradient(90deg, rgba(232,201,192,.75), rgba(243,220,210,.6));
+  box-shadow:0 1px 2px rgba(0,0,0,.08);
+  -webkit-mask:linear-gradient(90deg, transparent 0 3px, #000 3px calc(100% - 3px), transparent 0);
+          mask:linear-gradient(90deg, transparent 0 3px, #000 3px calc(100% - 3px), transparent 0);
+}
+.polaroid:nth-child(even)::before{ background:linear-gradient(90deg, rgba(236,217,168,.75), rgba(246,231,191,.6)); }
+.polaroid:hover, .polaroid:focus-visible{
+  transform:rotate(0deg) scale(1.03); z-index:3;
+  box-shadow:0 2px 4px rgba(0,0,0,.08), 0 26px 40px -16px rgba(74,10,21,.6);
+  outline:none;
+}
+
+/* Entrada: llegan volando desde los lados */
+.polaroid.reveal{ opacity:0; transform:translateX(var(--fx, -60px)) rotate(calc(var(--r) * 4)) scale(.92); }
+.polaroid:nth-child(even).reveal{ --fx:60px; }
+.polaroid.reveal.in{ opacity:1; transform:rotate(var(--r)); }
+.polaroid.reveal.in:hover, .polaroid.reveal.in:focus-visible{ transform:rotate(0deg) scale(1.03); }
+
+/* Visor a pantalla completa */
+.lightbox{
+  position:fixed; inset:0; z-index:70;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(20,8,11,.94);
+  opacity:0; visibility:hidden;
+  transition:opacity .35s ease, visibility 0s linear .35s;
+  touch-action:pan-y;
+}
+.lightbox.open{ opacity:1; visibility:visible; transition:opacity .35s ease; }
+.lb-img{
+  max-width:min(92vw, 520px); max-height:82dvh;
+  border:8px solid #fffdf8; border-bottom-width:8px;
+  box-shadow:0 24px 60px rgba(0,0,0,.6);
+  transform:scale(.94); transition:transform .35s cubic-bezier(.2,.8,.2,1), opacity .2s ease;
+  user-select:none; -webkit-user-drag:none;
+}
+.lightbox.open .lb-img{ transform:none; }
+.lb-btn{
+  position:absolute; width:46px; height:46px; border-radius:50%;
+  display:grid; place-items:center;
+  background:rgba(255,253,248,.12); color:#fbf3e3;
+  border:1px solid rgba(236,217,168,.45);
+  cursor:pointer; -webkit-tap-highlight-color:transparent;
+  transition:background .2s ease;
+}
+.lb-btn:hover{ background:rgba(255,253,248,.22); }
+.lb-btn svg{ width:20px; height:20px; }
+.lb-close{ top:max(16px, env(safe-area-inset-top)); right:16px; }
+.lb-prev{ left:12px; top:50%; transform:translateY(-50%); }
+.lb-next{ right:12px; top:50%; transform:translateY(-50%); }
+.lb-count{
+  position:absolute; bottom:max(20px, env(safe-area-inset-bottom)); left:0; right:0;
+  text-align:center; font-family:var(--caps); font-size:11px; letter-spacing:.4em; color:var(--gold-light);
+}
+
 /* Aparición al hacer scroll */
 .reveal{ opacity:0; transform:translateY(26px); transition:opacity 1.1s ease var(--d, 0s), transform 1.1s cubic-bezier(.2,.7,.2,1) var(--d, 0s); }
 .reveal.in{ opacity:1; transform:none; }
@@ -1036,7 +1132,38 @@ body.locked{ overflow:hidden; height:100dvh; }
       </button>
     </div>
   </section>
+
+  <!-- ===================== GALERÍA ===================== -->
+  <section class="gallery" id="galeria">
+    <canvas class="speckles" aria-hidden="true"></canvas>
+
+    <p class="w-kicker reveal">Nuestros</p>
+    <h2 class="w-title reveal" style="--d:.15s">Momentos</h2>
+    <p class="gal-intro reveal" style="--d:.3s">Un pedacito de nuestra historia</p>
+
+    <div class="polaroids" id="polaroids">
+      <button class="polaroid reveal" type="button" data-i="0" aria-label="Ver foto 1 de 5"><img src="fotos/galeria2-web.jpg" alt="Camacho abraza a Jeanette por la espalda" loading="lazy" decoding="async"></button>
+      <button class="polaroid reveal" type="button" data-i="1" aria-label="Ver foto 2 de 5"><img src="fotos/galeria3-web.jpg" alt="Camacho y Jeanette abrazados de pie" loading="lazy" decoding="async"></button>
+      <button class="polaroid reveal" type="button" data-i="2" aria-label="Ver foto 3 de 5"><img src="fotos/galeria4-web.jpg" alt="Camacho besa la frente de Jeanette" loading="lazy" decoding="async"></button>
+      <button class="polaroid reveal" type="button" data-i="3" aria-label="Ver foto 4 de 5"><img src="fotos/galeria5-web.jpg" alt="Jeanette abraza a Camacho, que sonríe sentado" loading="lazy" decoding="async"></button>
+      <button class="polaroid reveal" type="button" data-i="4" aria-label="Ver foto 5 de 5"><img src="fotos/galeria6-web.jpg" alt="Jeanette besa a Camacho" loading="lazy" decoding="async"></button>
+    </div>
+  </section>
 </main>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Galería de fotos">
+  <img class="lb-img" id="lbImg" alt="">
+  <button class="lb-btn lb-close" type="button" id="lbClose" aria-label="Cerrar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <button class="lb-btn lb-prev" type="button" id="lbPrev" aria-label="Foto anterior">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+  <button class="lb-btn lb-next" type="button" id="lbNext" aria-label="Foto siguiente">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+  </button>
+  <p class="lb-count" id="lbCount"></p>
+</div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -1315,6 +1442,56 @@ body.locked{ overflow:hidden; height:100dvh; }
     } else {
       showToast('No se pudo copiar, mantén presionado el número');
     }
+  });
+
+  /* ---- Galería: visor a pantalla completa ---- */
+  const shots = [...document.querySelectorAll('.polaroid')];
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbCount = document.getElementById('lbCount');
+  let lbIndex = 0, lastFocus = null;
+
+  function showShot(i){
+    lbIndex = (i + shots.length) % shots.length;
+    const src = shots[lbIndex].querySelector('img');
+    lbImg.style.opacity = 0;
+    lbImg.onload = () => { lbImg.style.opacity = 1; };
+    lbImg.src = src.currentSrc || src.src;
+    if (lbImg.complete && lbImg.naturalWidth) lbImg.style.opacity = 1; // misma foto o ya en caché: no dispara onload
+    lbImg.alt = src.alt;
+    lbCount.textContent = `${lbIndex + 1} / ${shots.length}`;
+  }
+  function openLb(i){
+    lastFocus = document.activeElement;
+    showShot(i);
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('lbClose').focus();
+  }
+  function closeLb(){
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+    if (lastFocus) lastFocus.focus();
+  }
+  shots.forEach((s, i) => s.addEventListener('click', () => openLb(i)));
+  document.getElementById('lbClose').addEventListener('click', closeLb);
+  document.getElementById('lbPrev').addEventListener('click', () => showShot(lbIndex - 1));
+  document.getElementById('lbNext').addEventListener('click', () => showShot(lbIndex + 1));
+  lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+  addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLb();
+    if (e.key === 'ArrowLeft') showShot(lbIndex - 1);
+    if (e.key === 'ArrowRight') showShot(lbIndex + 1);
+  });
+  // deslizar con el dedo
+  let touchX = null;
+  lb.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive:true });
+  lb.addEventListener('touchend', e => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 45) showShot(lbIndex + (dx < 0 ? 1 : -1));
+    touchX = null;
   });
 
   /* ---- Inclinación 3D de la tarjeta al tocarla / pasar el mouse ---- */
