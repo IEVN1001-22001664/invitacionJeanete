@@ -383,28 +383,6 @@ body.locked{ overflow:hidden; height:100dvh; }
 
 .flourish{ width:210px; height:26px; margin:28px auto 0; display:block; overflow:visible; }
 
-/* Foto en arco */
-.arch{
-  position:relative; width:min(78%, 290px); aspect-ratio:3/4;
-  margin:46px auto 0;
-}
-.arch::before{ /* marco dorado desplazado */
-  content:''; position:absolute; inset:-10px;
-  border:1px solid var(--gold);
-  border-radius:999px 999px 6px 6px;
-  opacity:.8;
-}
-.arch-img{
-  position:absolute; inset:0; overflow:hidden;
-  border-radius:999px 999px 4px 4px;
-  box-shadow:0 18px 40px -18px rgba(74,10,21,.55);
-}
-.arch-img img{
-  width:100%; height:120%; object-fit:cover; object-position:50% 30%;
-  transform:translateY(var(--py, -8%));
-  will-change:transform;
-}
-
 .w-blessing{
   margin:56px auto 8px; max-width:300px;
   font-family:var(--serif); font-style:italic; font-size:19px; line-height:1.5;
@@ -574,10 +552,6 @@ body.locked{ overflow:hidden; height:100dvh; }
       </svg>
     </div>
 
-    <div class="arch reveal reveal--zoom" id="arch">
-      <div class="arch-img"><img src="fotos/bienvenida.jpg" alt="Camacho y Jeanette" loading="lazy"></div>
-    </div>
-
     <p class="w-blessing reveal">Con la bendición de Dios y de nuestros padres</p>
 
     <div class="parents">
@@ -611,7 +585,7 @@ body.locked{ overflow:hidden; height:100dvh; }
           <path d="M26.5 16.5 L28.5 12.5 L31 15 L33.5 12.5 L35.5 16.5 Z" fill="var(--gold)"/>
         </svg>
         <h3>Padres de la novia</h3>
-        <p>Inoscencia Arana B.<span class="amp">&amp;</span>Ignacio Trujillo S.</p>
+        <p>Inocencia Arana B.<span class="amp">&amp;</span>Ignacio Trujillo S.</p>
       </div>
     </div>
   </section>
@@ -834,19 +808,6 @@ body.locked{ overflow:hidden; height:100dvh; }
   addEventListener('load', paintSpeckles); // repinta cuando ya cargaron fuentes e imágenes
   let lastW = innerWidth;
   addEventListener('resize', () => { if (innerWidth !== lastW){ lastW = innerWidth; paintSpeckles(); } });
-
-  /* ---- Parallax suave en la foto en arco ---- */
-  const archImg = document.querySelector('.arch-img img');
-  const arch = document.getElementById('arch');
-  let ticking = false;
-  function parallax(){
-    const r = arch.getBoundingClientRect();
-    const p = (r.top + r.height / 2) / innerHeight - .5;           // -0.5 … 0.5 mientras cruza la pantalla
-    archImg.style.setProperty('--py', (-8 + p * 12).toFixed(2) + '%');
-    ticking = false;
-  }
-  addEventListener('scroll', () => { if (!ticking){ ticking = true; requestAnimationFrame(parallax); } }, { passive:true });
-  parallax();
 
   /* ---- Lluvia de pétalos ---- */
   function startPetals(){
