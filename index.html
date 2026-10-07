@@ -541,6 +541,166 @@ body.locked{ overflow:hidden; height:100dvh; }
 .v-btn:active{ transform:translateY(1px) scale(.98); }
 .v-btn:focus-visible{ outline:2px solid var(--gold-light); outline-offset:3px; }
 
+/* Foto de estudio (fondo negro): retrato enmarcado en arco */
+.portrait{
+  position:relative;
+  background:var(--paper);
+  padding:46px 0 10px;
+}
+.portrait-frame{
+  position:relative;
+  width:84%; aspect-ratio:2/3; margin:0 auto;
+}
+.portrait-frame::before{ /* filete dorado desplazado */
+  content:''; position:absolute; inset:-11px;
+  border:1px solid var(--gold);
+  border-radius:999px 999px 10px 10px;
+}
+.portrait-frame::after{ /* segundo filete, más tenue */
+  content:''; position:absolute; inset:-17px;
+  border:1px solid rgba(201,164,92,.4);
+  border-radius:999px 999px 14px 14px;
+}
+.portrait-img{
+  position:absolute; inset:0; overflow:hidden;
+  border-radius:999px 999px 6px 6px;
+  background:#0d0a0b;
+  box-shadow:0 24px 44px -20px rgba(74,10,21,.7);
+}
+.portrait-img img{
+  width:100%; height:100%; object-fit:cover; object-position:50% 30%;
+  transform:scale(var(--zoom, 1.12)); transform-origin:50% 35%;
+}
+
+/* =========================================================
+   MESA DE REGALOS
+   ========================================================= */
+.gifts{
+  position:relative;
+  background:var(--paper);
+  padding:30px 26px 210px;
+  text-align:center;
+  color:var(--wax-dark);
+  overflow:hidden;
+}
+.gifts > *:not(.speckles):not(.sprig){ position:relative; z-index:2; }
+.gifts .w-title{ font-size:clamp(56px, 16vw, 72px); }
+.g-intro{
+  font-family:var(--serif); font-size:20px; line-height:1.5; color:var(--ink);
+  max-width:320px; margin:14px auto 0;
+}
+
+.g-option{ margin-top:54px; display:flex; flex-direction:column; align-items:center; }
+.g-icon{
+  width:78px; height:78px; border-radius:50%;
+  display:grid; place-items:center;
+  background:radial-gradient(circle at 35% 30%, #fffaf0, #f1e4cc);
+  box-shadow:0 0 0 1px var(--gold), 0 0 0 6px var(--paper), 0 0 0 7px rgba(201,164,92,.45), 0 12px 22px -12px rgba(74,10,21,.45);
+  margin-bottom:18px;
+}
+.g-icon svg{ width:40px; height:40px; overflow:visible; }
+.g-option h3{
+  font-family:var(--caps); font-weight:500; font-size:15px; letter-spacing:.26em; padding-left:.26em;
+  color:#8a1a2c;
+}
+.g-option h3 small{
+  display:block; margin-top:6px;
+  font-size:10px; letter-spacing:.4em; padding-left:.4em; color:#9a7f55;
+}
+.g-option p{
+  font-family:var(--serif); font-size:19px; line-height:1.5; color:var(--ink);
+  max-width:310px; margin-top:10px;
+}
+
+.g-btn{
+  position:relative; overflow:hidden;
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  margin-top:20px; padding:14px 28px;
+  border:0; border-radius:999px; cursor:pointer;
+  background:linear-gradient(160deg, #8a1a2c, #5e0f1c);
+  color:#fbf3e3;
+  font-family:var(--caps); font-weight:500; font-size:12px; letter-spacing:.2em;
+  text-decoration:none;
+  box-shadow:0 10px 20px -10px rgba(74,10,21,.8), 0 0 0 1px rgba(201,164,92,.6);
+  transition:transform .25s ease, box-shadow .25s ease, background .3s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.g-btn svg{ width:17px; height:17px; color:var(--gold-light); }
+.g-btn::after{
+  content:''; position:absolute; top:0; bottom:0; width:40%; left:-60%;
+  background:linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+  transform:skewX(-20deg);
+  animation:shine 3.8s ease-in-out 1.5s infinite;
+}
+.g-btn:hover{ transform:translateY(-2px); }
+.g-btn:active{ transform:translateY(1px) scale(.98); }
+.g-btn:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
+.g-btn.copied{ background:linear-gradient(160deg, #a8823e, #7d5f27); }
+
+.g-divider{ display:flex; align-items:center; justify-content:center; gap:10px; margin-top:54px; }
+.g-divider::before, .g-divider::after{
+  content:''; width:70px; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold));
+}
+.g-divider::after{ transform:scaleX(-1); }
+.g-divider i{ width:6px; height:6px; background:var(--gold); transform:rotate(45deg); }
+
+/* Tarjeta bancaria ilustrada */
+.bank-card{
+  position:relative; overflow:hidden;
+  width:min(100%, 320px); aspect-ratio:1.586;
+  margin:22px auto 0; padding:20px 22px;
+  border-radius:16px;
+  text-align:left; color:#fbf3e3;
+  background:
+    radial-gradient(circle at 85% 0%, rgba(201,164,92,.35), transparent 45%),
+    radial-gradient(circle at 0% 100%, rgba(184,52,74,.6), transparent 55%),
+    linear-gradient(135deg, #7a1424, #4a0a15);
+  box-shadow:0 22px 36px -18px rgba(74,10,21,.85), 0 0 0 1px rgba(236,217,168,.35) inset;
+  display:flex; flex-direction:column; justify-content:space-between;
+  transform:perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition:transform .4s ease;
+}
+.bank-card::before{ /* brillo diagonal */
+  content:''; position:absolute; inset:-50%;
+  background:linear-gradient(115deg, transparent 40%, rgba(255,255,255,.14) 50%, transparent 60%);
+  animation:cardGleam 5s ease-in-out 1s infinite;
+}
+.bc-top{ display:flex; justify-content:space-between; align-items:flex-start; }
+.bc-bank{ font-family:var(--caps); font-weight:500; font-size:20px; letter-spacing:.18em; }
+.bc-mono{ font-family:var(--script); font-size:26px; line-height:1; color:var(--gold-light); }
+.bc-chip{
+  width:40px; height:30px; border-radius:6px;
+  background:linear-gradient(135deg, #f6e7bf, #c9a45c 50%, #a8823e);
+  box-shadow:inset 0 0 0 1px rgba(74,10,21,.25);
+  position:relative;
+}
+.bc-chip::before{
+  content:''; position:absolute; inset:7px 0; border-top:1px solid rgba(74,10,21,.35); border-bottom:1px solid rgba(74,10,21,.35);
+}
+.bc-number{
+  font-family:var(--serif); font-weight:600; font-size:clamp(20px, 6.4vw, 25px);
+  letter-spacing:.08em; white-space:nowrap;
+  font-variant-numeric:lining-nums tabular-nums;
+  text-shadow:0 1px 0 rgba(0,0,0,.3);
+}
+.bc-holder small{
+  display:block; font-family:var(--caps); font-size:8px; letter-spacing:.3em; color:var(--gold-light); opacity:.85;
+}
+.bc-holder span{ font-family:var(--caps); font-size:13px; letter-spacing:.12em; }
+
+.toast{
+  position:fixed; left:50%; bottom:28px; z-index:60;
+  transform:translate(-50%, 20px); opacity:0;
+  padding:12px 22px; border-radius:999px;
+  background:rgba(74,10,21,.95); color:#fbf3e3;
+  font-family:var(--serif); font-size:16px; white-space:nowrap;
+  box-shadow:0 10px 24px -8px rgba(0,0,0,.5), 0 0 0 1px rgba(201,164,92,.5);
+  transition:opacity .35s ease, transform .35s ease;
+  pointer-events:none;
+}
+.toast.show{ opacity:1; transform:translate(-50%, 0); }
+
 /* Aparición al hacer scroll */
 .reveal{ opacity:0; transform:translateY(26px); transition:opacity 1.1s ease var(--d, 0s), transform 1.1s cubic-bezier(.2,.7,.2,1) var(--d, 0s); }
 .reveal.in{ opacity:1; transform:none; }
@@ -568,6 +728,7 @@ body.locked{ overflow:hidden; height:100dvh; }
 @keyframes sway{ 0%,100%{ transform:rotate(0deg); } 50%{ transform:rotate(2.2deg); } }
 @keyframes twinkle{ 0%,100%{ opacity:0; transform:scale(.4); } 45%{ opacity:1; transform:scale(1); } }
 @keyframes shine{ 0%{ left:-60%; } 55%,100%{ left:130%; } }
+@keyframes cardGleam{ 0%{ transform:translateX(-40%); } 60%,100%{ transform:translateX(40%); } }
 @keyframes tick{ from{ transform:translateY(-60%); opacity:0; } to{ transform:none; opacity:1; } }
 @keyframes burst{
   0%  { transform:translate(-50%,-50%) scale(1); opacity:1; }
@@ -577,7 +738,7 @@ body.locked{ overflow:hidden; height:100dvh; }
 @media (prefers-reduced-motion: reduce){
   .seal, .seal-glow, .hint svg, .dust i{ animation:none !important; }
   .flap, .seal-half, .hero-photo{ transition-duration:.01s !important; }
-  .sprig svg, .in .rings .shine, .v-btn::after{ animation:none !important; }
+  .sprig svg, .in .rings .shine, .v-btn::after, .g-btn::after, .bank-card::before{ animation:none !important; }
   .reveal{ opacity:1; transform:none; transition:none; }
   .draw{ stroke-dashoffset:0; transition:none !important; }
 }
@@ -789,7 +950,95 @@ body.locked{ overflow:hidden; height:100dvh; }
 
     <svg class="garland" aria-hidden="true"><rect width="100%" height="100%" fill="url(#garlandTile)"/></svg>
   </section>
+
+  <!-- ===================== FOTO GALERÍA ===================== -->
+  <section class="portrait">
+    <div class="portrait-frame reveal reveal--zoom">
+      <div class="portrait-img"><img src="fotos/galeria1.jpg" alt="Camacho y Jeanette abrazados" loading="lazy" decoding="async"></div>
+    </div>
+  </section>
+
+  <!-- ===================== MESA DE REGALOS ===================== -->
+  <section class="gifts" id="regalos">
+    <canvas class="speckles" aria-hidden="true"></canvas>
+    <div class="sprig sprig--bl" aria-hidden="true"><svg><use href="#sprig"/></svg></div>
+    <div class="sprig sprig--br" aria-hidden="true"><svg><use href="#sprig"/></svg></div>
+
+    <p class="w-kicker reveal">Mesa de</p>
+    <h2 class="w-title reveal" style="--d:.15s">Regalos</h2>
+    <p class="g-intro reveal" style="--d:.3s">
+      Tu presencia es el regalo más valioso para nosotros. Si además deseas
+      tener un detalle, te compartimos estas opciones:
+    </p>
+
+    <!-- Liverpool -->
+    <div class="g-option reveal">
+      <div class="g-icon">
+        <svg viewBox="0 0 40 40" fill="none" stroke="#8a1a2c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect class="draw" pathLength="1" x="6" y="16" width="28" height="19" rx="1.5"/>
+          <rect class="draw" pathLength="1" x="4" y="11" width="32" height="6" rx="1.5" style="--dd:.3s"/>
+          <path class="draw" pathLength="1" d="M20 11 V35" style="--dd:.6s"/>
+          <path class="draw" pathLength="1" d="M20 11 C 15 11, 11 9, 12 5.5 C 13 3, 17 4, 20 11 C 23 4, 27 3, 28 5.5 C 29 9, 25 11, 20 11" stroke="#a8823e" style="--dd:.9s"/>
+        </svg>
+      </div>
+      <h3>Liverpool<small>Evento 60047552</small></h3>
+      <p>Hemos preparado una lista con algunas cosas que nos ayudarán a comenzar nuestro hogar.</p>
+      <a class="g-btn" href="https://mesaderegalos.liverpool.com.mx/milistaderegalos/60047552" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 21V7"/></svg>
+        Ver lista de regalos
+      </a>
+    </div>
+
+    <div class="g-divider reveal" aria-hidden="true"><i></i></div>
+
+    <!-- Lluvia de sobres -->
+    <div class="g-option reveal">
+      <div class="g-icon">
+        <svg viewBox="0 0 40 40" fill="none" stroke="#8a1a2c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect class="draw" pathLength="1" x="4" y="12" width="32" height="22" rx="2"/>
+          <path class="draw" pathLength="1" d="M4.5 13 L20 25 L35.5 13" style="--dd:.4s"/>
+          <path class="draw" pathLength="1" d="M4.5 33 L16 22.5 M35.5 33 L24 22.5" style="--dd:.7s"/>
+          <path d="M20 9.5 C 18.6 7.6, 15.8 8.4, 16.4 10.6 C 16.9 12.4, 20 14, 20 14 C 20 14, 23.1 12.4, 23.6 10.6 C 24.2 8.4, 21.4 7.6, 20 9.5 Z" fill="#a8823e" stroke="none"/>
+        </svg>
+      </div>
+      <h3>Lluvia de sobres</h3>
+      <p>Es la tradición de regalar dinero en efectivo dentro de un sobre. El día de la boda tendremos un buzón para recibirlo con mucho cariño.</p>
+    </div>
+
+    <div class="g-divider reveal" aria-hidden="true"><i></i></div>
+
+    <!-- Transferencia -->
+    <div class="g-option reveal">
+      <div class="g-icon">
+        <svg viewBox="0 0 40 40" fill="none" stroke="#8a1a2c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect class="draw" pathLength="1" x="4" y="9" width="32" height="22" rx="3"/>
+          <path class="draw" pathLength="1" d="M4 15 H36" style="--dd:.4s"/>
+          <path class="draw" pathLength="1" d="M9 25 H18 M22 25 H26" style="--dd:.7s"/>
+          <rect x="27" y="19" width="5" height="4" rx="1" fill="#a8823e" stroke="none"/>
+        </svg>
+      </div>
+      <h3>Transferencia</h3>
+      <p>No es necesario estar cerca para hacernos sentir tu cariño. Si lo prefieres, puedes enviarnos tu regalo a esta cuenta:</p>
+
+      <div class="bank-card" id="bankCard">
+        <div class="bc-top">
+          <span class="bc-bank">BBVA</span>
+          <span class="bc-mono">C &amp; J</span>
+        </div>
+        <span class="bc-chip" aria-hidden="true"></span>
+        <span class="bc-number" id="accNumber" aria-label="Número de tarjeta 4152 3143 5204 6976">4152 3143 5204 6976</span>
+        <div class="bc-holder"><small>Titular</small><span>Manuel Camacho Camacho</span></div>
+      </div>
+
+      <button class="g-btn" type="button" id="copyBtn" data-copy="4152314352046976">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+        <span>Copiar número</span>
+      </button>
+    </div>
+  </section>
 </main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <!-- Rama decorativa reutilizable -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1011,23 +1260,75 @@ body.locked{ overflow:hidden; height:100dvh; }
   let lastW = innerWidth;
   addEventListener('resize', () => { if (innerWidth !== lastW){ lastW = innerWidth; paintSpeckles(); } });
 
-  /* ---- Zoom suave de la foto completa al hacer scroll ---- */
-  const fullSec = document.getElementById('fotoCompleta');
-  const fullImg = fullSec.querySelector('img');
+  /* ---- Zoom suave de las fotos completas al hacer scroll ---- */
+  const fullSecs = [...document.querySelectorAll('.photo-full, .portrait-frame')];
   let zTicking = false;
-  function zoomPhoto(){
-    const r = fullSec.getBoundingClientRect();
-    // 0 cuando la sección entra por abajo, 1 cuando su centro llega a media pantalla
-    const p = Math.min(Math.max((innerHeight - r.top) / (innerHeight / 2 + r.height / 2), 0), 1);
-    fullImg.style.setProperty('--zoom', (1.12 - p * .12).toFixed(4));
+  function zoomPhotos(){
+    fullSecs.forEach(sec => {
+      const r = sec.getBoundingClientRect();
+      if (r.bottom < -100 || r.top > innerHeight + 100) return;
+      // 0 cuando la sección entra por abajo, 1 cuando su centro llega a media pantalla
+      const p = Math.min(Math.max((innerHeight - r.top) / (innerHeight / 2 + r.height / 2), 0), 1);
+      sec.querySelector('img').style.setProperty('--zoom', (1.12 - p * .12).toFixed(4));
+    });
     zTicking = false;
   }
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches){
-    addEventListener('scroll', () => { if (!zTicking){ zTicking = true; requestAnimationFrame(zoomPhoto); } }, { passive:true });
-    zoomPhoto();
+    addEventListener('scroll', () => { if (!zTicking){ zTicking = true; requestAnimationFrame(zoomPhotos); } }, { passive:true });
+    zoomPhotos();
   } else {
-    fullImg.style.setProperty('--zoom', 1);
+    fullSecs.forEach(sec => sec.querySelector('img').style.setProperty('--zoom', 1));
   }
+
+  /* ---- Copiar número de cuenta ---- */
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+  async function copyText(text){
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // respaldo para navegadores sin acceso al portapapeles
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;opacity:0;';
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    }
+  }
+  const copyBtn = document.getElementById('copyBtn');
+  copyBtn.addEventListener('click', async () => {
+    const label = copyBtn.querySelector('span');
+    if (await copyText(copyBtn.dataset.copy)){
+      copyBtn.classList.add('copied');
+      label.textContent = '¡Copiado!';
+      showToast('Número copiado al portapapeles');
+      setTimeout(() => { copyBtn.classList.remove('copied'); label.textContent = 'Copiar número'; }, 2200);
+    } else {
+      showToast('No se pudo copiar, mantén presionado el número');
+    }
+  });
+
+  /* ---- Inclinación 3D de la tarjeta al tocarla / pasar el mouse ---- */
+  const bankCard = document.getElementById('bankCard');
+  bankCard.addEventListener('pointermove', e => {
+    const r = bankCard.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+    bankCard.style.setProperty('--ry', (x * 14).toFixed(1) + 'deg');
+    bankCard.style.setProperty('--rx', (-y * 14).toFixed(1) + 'deg');
+  });
+  bankCard.addEventListener('pointerleave', () => {
+    bankCard.style.setProperty('--ry', '0deg');
+    bankCard.style.setProperty('--rx', '0deg');
+  });
 
   /* ---- Lluvia de pétalos ---- */
   function startPetals(){
