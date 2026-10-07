@@ -258,7 +258,7 @@ body.locked{ overflow:hidden; height:100dvh; }
   background:linear-gradient(180deg, rgba(26,18,20,.15) 0%, transparent 35%, rgba(26,18,20,.55) 70%, rgba(26,18,20,.95) 100%);
 }
 .hero-content{
-  position:absolute; left:0; right:0; bottom:max(9vh,56px); z-index:2;
+  position:absolute; left:0; right:0; bottom:max(5vh,32px); z-index:2;
   text-align:center; padding:0 16px;
 }
 .hero-content > *{ opacity:0; transform:translateY(18px); transition:opacity 1.2s ease, transform 1.2s ease; }
@@ -266,6 +266,7 @@ body.locked{ overflow:hidden; height:100dvh; }
 .revealed .hero-content > :nth-child(1){ transition-delay:.6s; }
 .revealed .hero-content > :nth-child(2){ transition-delay:.9s; }
 .revealed .hero-content > :nth-child(3){ transition-delay:1.2s; }
+.revealed .hero-content > :nth-child(4){ transition-delay:1.6s; }
 .hero-content small{
   display:block; font-family:var(--caps); font-size:11px; letter-spacing:.4em; padding-left:.4em;
   color:var(--gold-light);
@@ -279,6 +280,41 @@ body.locked{ overflow:hidden; height:100dvh; }
 .hero-content p{
   font-family:var(--caps); font-size:13px; letter-spacing:.3em; padding-left:.3em;
 }
+
+/* Cuenta regresiva */
+.countdown{
+  position:relative;
+  display:grid; grid-template-columns:repeat(4, 1fr);
+  max-width:340px; margin:26px auto 0; padding-top:18px;
+}
+.countdown::before{ /* línea dorada con rombo al centro */
+  content:''; position:absolute; top:0; left:8%; right:8%; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold) 25%, var(--gold-light) 50%, var(--gold) 75%, transparent);
+}
+.countdown::after{
+  content:''; position:absolute; top:-3px; left:50%; width:7px; height:7px;
+  background:var(--gold-light); transform:translateX(-50%) rotate(45deg);
+  box-shadow:0 0 8px rgba(236,217,168,.7);
+}
+.cd-unit{ position:relative; }
+.cd-unit + .cd-unit::before{
+  content:''; position:absolute; left:0; top:8px; bottom:6px; width:1px;
+  background:linear-gradient(180deg, transparent, rgba(236,217,168,.45), transparent);
+}
+.cd-num{
+  display:block; height:1.1em; overflow:hidden;
+  font-family:var(--serif); font-weight:500;
+  font-size:clamp(30px, 9vw, 38px); line-height:1.1;
+  font-variant-numeric:lining-nums tabular-nums;
+}
+.cd-num span{ display:block; }
+.cd-num span.tick{ animation:tick .5s cubic-bezier(.3,.7,.3,1); }
+.cd-label{
+  display:block; margin-top:4px;
+  font-family:var(--caps); font-size:9px; letter-spacing:.32em; padding-left:.32em;
+  color:var(--gold-light);
+}
+.countdown.done{ display:block; font-family:var(--script); font-size:34px; }
 
 #petals{
   position:fixed; top:0; left:50%; transform:translateX(-50%);
@@ -299,6 +335,7 @@ body.locked{ overflow:hidden; height:100dvh; }
   85% { opacity:.6; }
   100%{ transform:translate(var(--x), -140px) scale(1); opacity:0; }
 }
+@keyframes tick{ from{ transform:translateY(-60%); opacity:0; } to{ transform:none; opacity:1; } }
 @keyframes burst{
   0%  { transform:translate(-50%,-50%) scale(1); opacity:1; }
   100%{ transform:translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(.2); opacity:0; }
@@ -358,6 +395,12 @@ body.locked{ overflow:hidden; height:100dvh; }
       <small>¡Nos casamos!</small>
       <h1>Camacho <em>&amp;</em> Jeanette</h1>
       <p>07 · 11 · 2026</p>
+      <div class="countdown" id="countdown" aria-label="Cuenta regresiva para la boda">
+        <div class="cd-unit"><span class="cd-num" data-k="d"><span>00</span></span><span class="cd-label">Días</span></div>
+        <div class="cd-unit"><span class="cd-num" data-k="h"><span>00</span></span><span class="cd-label">Hrs</span></div>
+        <div class="cd-unit"><span class="cd-num" data-k="m"><span>00</span></span><span class="cd-label">Min</span></div>
+        <div class="cd-unit"><span class="cd-num" data-k="s"><span>00</span></span><span class="cd-label">Seg</span></div>
+      </div>
     </div>
   </section>
 </main>
@@ -477,6 +520,40 @@ body.locked{ overflow:hidden; height:100dvh; }
   envelope.addEventListener('keydown', e => {
     if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); }
   });
+
+  /* ---- Cuenta regresiva ---- */
+  const WEDDING = new Date('2026-11-07T17:00:00-06:00'); // hora del centro de México
+  const cd = document.getElementById('countdown');
+  const cells = {};
+  cd.querySelectorAll('.cd-num').forEach(el => cells[el.dataset.k] = el);
+
+  function setCell(k, val){
+    const el = cells[k];
+    const txt = String(val).padStart(2, '0');
+    if (el.textContent === txt) return;
+    const span = document.createElement('span');
+    span.textContent = txt;
+    if (document.body.classList.contains('revealed')) span.className = 'tick';
+    el.replaceChildren(span);
+  }
+
+  function updateCountdown(){
+    const diff = WEDDING - Date.now();
+    if (diff <= 0){
+      cd.classList.add('done');
+      cd.textContent = '¡Hoy es el gran día!';
+      return false;
+    }
+    const s = Math.floor(diff / 1000);
+    setCell('d', Math.floor(s / 86400));
+    setCell('h', Math.floor(s % 86400 / 3600));
+    setCell('m', Math.floor(s % 3600 / 60));
+    setCell('s', s % 60);
+    return true;
+  }
+  if (updateCountdown()){
+    const timer = setInterval(() => { if (!updateCountdown()) clearInterval(timer); }, 1000);
+  }
 
   /* ---- Lluvia de pétalos ---- */
   function startPetals(){
