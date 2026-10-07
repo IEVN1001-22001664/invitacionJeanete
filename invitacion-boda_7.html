@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Nuestra Boda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#7A3245;
+    --forest-deep:#3A1420;
+    --forest-mid:#5C2436;
+    --gold:#B97C8C;
+    --gold-soft:#E7C9D1;
+    --ivory:#FFFFFF;
+    --blush:#F7EAEC;
+    --wine:#5C1E2C;
+    --ink:#2A1F22;
+    --muted:#8C7B80;
+    --danger:#8C3B2E;
+    --ok:#3E5C3A;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ivory);
+    color:var(--ink);
+    font-family:'Public Sans',sans-serif;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    letter-spacing:0.01em;
+    margin:0;
+  }
+  #app{min-height:100vh;position:relative;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+
+  /* ---------- layout helpers ---------- */
+  .page{max-width:480px;margin:0 auto;position:relative;background:var(--ivory);min-height:100vh;overflow:hidden;}
+  .section{padding:52px 28px;text-align:center;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
+  .section-tight{padding:36px 28px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
+  .divider{display:flex;align-items:center;justify-content:center;gap:14px;margin:8px auto 28px;width:100%;}
+  .divider .line{height:1px;flex:1;max-width:70px;background:var(--gold);opacity:.55;}
+  .divider .mark{width:7px;height:7px;background:var(--gold);transform:rotate(45deg);}
+  .muted{color:var(--muted);font-size:14px;line-height:1.7;}
+  .eyebrow{font-size:12px;color:var(--gold);letter-spacing:.04em;margin-bottom:6px;}
+
+  /* ---------- cover ---------- */
+  .cover{
+    position:fixed;inset:0;z-index:50;overflow:hidden;
+    background:
+      radial-gradient(ellipse at 50% 42%, #FBF2EF 0%, #F4E1DD 48%, #E9C9C3 100%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:var(--ink);text-align:center;cursor:pointer;
+    transition:opacity 1.4s ease, transform 1.4s ease;
+  }
+  .cover.opening{opacity:0;transform:scale(1.18);pointer-events:none;}
+  .cover::before{
+    content:'';position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.5;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/></svg>");
+  }
+  /* ---- sobre como tarjeta real, proporción fija, con perspectiva 3D para la solapa ---- */
+  .env-wrap{position:relative;width:min(84vw, 420px);aspect-ratio:3/2;perspective:1000px;}
+  .env-card{
+    position:absolute;inset:0;border-radius:6px;overflow:hidden;
+    background:linear-gradient(160deg,#F6E0DC,#EAC7C1);
+    box-shadow:0 30px 55px -14px rgba(58,20,32,.4), 0 10px 22px rgba(58,20,32,.16);
+  }
+  .env-flap{
+    position:absolute;top:0;left:0;width:100%;height:46%;
+    transform-origin:top center;transform-style:preserve-3d;backface-visibility:hidden;
+    transition:transform 1.3s cubic-bezier(.45,0,.4,1);
+    z-index:3;
+  }
+  .cover.opening .env-flap{transform:rotateX(-160deg);}
+  .env-flap-shape{
+    position:absolute;inset:0;
+    clip-path:polygon(0 0,100% 0,50% 100%);
+    background:linear-gradient(165deg,#FCF2EF,#F0DAD6);
+    box-shadow:inset 0 -10px 16px rgba(92,30,44,.07);
+  }
+  .seal-wrap{
+    position:absolute;top:100%;left:50%;transform:translate(-50%,-52%);
+    z-index:4;backface-visibility:hidden;
+  }
+  .seal{
+    width:150px;height:150px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #8C3B52, #5C1E2C 70%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-style:italic;font-size:36px;letter-spacing:.03em;
+    color:#EFD3D9;box-shadow:0 8px 22px rgba(58,20,32,.35), inset 0 2px 4px rgba(255,255,255,.15), inset 0 -6px 10px rgba(0,0,0,.25);
+  }
+  .cover-caption{margin-top:28px;z-index:2;transition:opacity .35s ease;}
+  /* ---- capa blanca intermedia: se desliza hacia abajo y se desvanece, revelando el contenido ---- */
+  .white-layer{position:fixed;inset:0;z-index:45;background:#fff;transition:opacity 1.5s ease, transform 1.5s ease;}
+  .white-layer.hide{opacity:0;transform:translateY(100%);pointer-events:none;}
+  .cover.opening .cover-caption{opacity:0;}
+  .cover .tap{font-size:12px;color:var(--forest);opacity:.65;letter-spacing:.1em;text-transform:uppercase;}
+  .chev{display:flex;flex-direction:column;align-items:center;gap:1px;margin-top:20px;}
+  .chev span{width:12px;height:12px;border-top:2px solid var(--gold);border-right:2px solid var(--gold);opacity:.6;animation:chevBounce 1.6s ease-in-out infinite;}
+  .chev span:nth-child(2){animation-delay:.15s;}
+  @keyframes chevBounce{0%,100%{transform:translateY(0) rotate(-45deg);opacity:.4;}50%{transform:translateY(-5px) rotate(-45deg);opacity:.9;}}
+  @media (prefers-reduced-motion: reduce){
+    .env-flap{transition:opacity .4s ease;}
+    .cover.opening .env-flap{transform:none;opacity:0;}
+    .cover.opening{transform:none;transition:opacity .4s ease;}
+    .white-layer.hide{transform:none;transition:opacity .4s ease;}
+    .chev span{animation:none;transform:rotate(-45deg);opacity:.6;}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:linear-gradient(180deg, var(--forest-deep), var(--forest) 60%, var(--forest-mid));
+    background-size:cover;background-position:center 22%;
+    color:var(--ivory);padding:60px 28px 70px;text-align:center;
+    min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  }
+  .hero .eyebrow{color:var(--gold-soft);}
+  .countdown .box{backdrop-filter:blur(6px);}
+  /* ---- respiro fotográfico entre secciones ---- */
+  .photo-break{position:relative;width:100%;min-height:62vh;background:#111;overflow:hidden;display:flex;align-items:flex-end;}
+  .photo-break img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .photo-break .pb-caption{position:relative;z-index:2;width:100%;padding:30px 28px 38px;background:linear-gradient(180deg,transparent,rgba(10,6,8,.8));text-align:center;}
+  .photo-break .pb-caption .line{font-family:'Fraunces',serif;font-style:italic;font-size:19px;color:#F3E3E1;}
+  .hero h1{font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:14px;}
+  .hero .names{font-size:44px;line-height:1.1;font-style:italic;font-weight:500;}
+  .hero .msg{margin-top:22px;font-size:14.5px;line-height:1.8;color:rgba(255,255,255,.82);max-width:340px;margin-left:auto;margin-right:auto;}
+
+  /* ---------- countdown ---------- */
+  .countdown{display:flex;gap:10px;justify-content:center;margin-top:30px;}
+  .countdown .box{background:rgba(255,255,255,.08);border:1px solid rgba(231,201,209,.35);border-radius:4px;padding:12px 6px;min-width:58px;}
+  .countdown .num{font-family:'Fraunces',serif;font-size:24px;color:var(--gold-soft);}
+  .countdown .lab{font-size:9px;letter-spacing:.08em;color:rgba(255,255,255,.55);text-transform:uppercase;margin-top:2px;}
+
+  /* ---------- families ---------- */
+  .fam-row{display:flex;gap:18px;justify-content:center;margin-top:6px;}
+  .fam-col{flex:1;}
+  .fam-col h3{font-size:12px;letter-spacing:.05em;color:var(--gold);text-transform:uppercase;margin-bottom:10px;font-family:'Public Sans',sans-serif;font-weight:600;}
+  .fam-col p{font-size:14px;line-height:1.9;margin:0;}
+
+  /* ---------- event cards ---------- */
+  .event-card{
+    background:var(--blush);border:1px solid rgba(185,124,140,.35);border-radius:6px;
+    padding:22px 20px;text-align:left;margin-bottom:14px;
+  }
+  .event-card h3{font-size:19px;margin-bottom:6px;}
+  .event-card p{font-size:13.5px;color:var(--muted);line-height:1.6;margin:0 0 12px;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    border:1px solid var(--forest);color:var(--forest);background:transparent;
+    padding:11px 22px;border-radius:30px;font-size:13px;letter-spacing:.02em;font-weight:600;
+    transition:background .25s,color .25s;
+  }
+  .btn:hover{background:var(--forest);color:var(--ivory);}
+  .btn-solid{background:var(--forest);color:var(--ivory);border-color:var(--forest);}
+  .btn-solid:hover{background:var(--forest-mid);}
+  .btn-gold{border-color:var(--gold);color:#7a611f;}
+  .btn-gold:hover{background:var(--gold);color:var(--forest-deep);}
+  .btn-block{width:100%;}
+  .btn-sm{padding:8px 16px;font-size:12px;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;background:transparent;color:var(--muted);border-color:var(--muted);}
+
+  /* ---------- gift / bank ---------- */
+  .bank-box{background:var(--ivory);border:1px dashed var(--gold);border-radius:6px;padding:16px;margin-top:14px;text-align:left;}
+  .bank-box .acct{font-family:'Fraunces',serif;font-size:17px;letter-spacing:.04em;}
+  .copy-btn{border:none;background:none;color:var(--gold);font-size:12px;text-decoration:underline;margin-left:8px;}
+
+  /* ---------- rsvp ---------- */
+  .card{background:var(--blush);border-radius:8px;padding:26px 22px;text-align:left;border:1px solid rgba(185,124,140,.35);}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .field input, .field select{
+    width:100%;border:none;border-bottom:1.5px solid rgba(35,33,28,.25);
+    background:transparent;padding:8px 2px;font-size:15px;font-family:inherit;color:var(--ink);
+  }
+  .field input:focus, .field select:focus{outline:none;border-bottom-color:var(--gold);}
+  .rsvp-choices{display:flex;gap:10px;margin-top:18px;}
+  .status-pill{display:inline-block;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;}
+  .status-pending{background:#EFE6C8;color:#7a611f;}
+  .status-confirmed{background:#DCE7DA;color:var(--ok);}
+  .status-declined{background:#EFDAD6;color:var(--danger);}
+
+  /* ---------- important info ---------- */
+  .info-line{font-size:13.5px;color:var(--muted);line-height:1.9;text-align:left;padding-left:16px;position:relative;}
+  .info-line:before{content:'❖';position:absolute;left:0;color:var(--gold);font-size:11px;top:3px;}
+
+  /* ---------- footer ---------- */
+  .footer{background:var(--forest-deep);color:rgba(255,255,255,.55);padding:34px 24px;text-align:center;font-size:12px;}
+  .footer .names{font-family:'Fraunces',serif;font-style:italic;font-size:20px;color:var(--gold-soft);margin-bottom:10px;}
+
+  /* ---------- modal shell ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(21,32,24,.72);z-index:80;
+    display:flex;align-items:flex-end;justify-content:center;
+  }
+  .modal-sheet{
+    background:var(--ivory);width:100%;max-width:480px;max-height:92vh;overflow-y:auto;
+    border-radius:16px 16px 0 0;padding:24px 20px 32px;position:relative;
+  }
+  .modal-close{position:sticky;top:0;float:right;border:none;background:var(--blush);color:var(--ink);width:30px;height:30px;border-radius:50%;font-size:16px;margin-bottom:8px;}
+  .modal-title{font-size:22px;margin-bottom:4px;}
+
+  /* ---------- seat map ---------- */
+  .seat-legend{display:flex;gap:16px;font-size:11px;color:var(--muted);margin:10px 0 18px;flex-wrap:wrap;}
+  .seat-legend span{display:inline-flex;align-items:center;gap:5px;}
+  .dot{width:11px;height:11px;border-radius:50%;display:inline-block;}
+  .dot.avail{background:var(--blush);border:1px solid var(--gold);}
+  .dot.taken{background:var(--muted);}
+  .dot.mine{background:var(--ok);}
+  .tables-grid{display:grid;grid-template-columns:1fr;gap:16px;}
+  .table-block{border:1px solid rgba(185,124,140,.4);border-radius:10px;padding:12px 10px;}
+  .table-name{font-size:12px;font-weight:600;letter-spacing:.03em;color:var(--forest);margin-bottom:8px;text-align:center;}
+  .table-rect{background:var(--blush);border-radius:6px;padding:8px;}
+  .seat-row{display:flex;justify-content:space-between;gap:5px;margin-bottom:5px;}
+  .seat-row:last-child{margin-bottom:0;}
+  .seat{
+    flex:1;aspect-ratio:1;border-radius:50%;border:1px solid var(--gold);
+    background:var(--ivory);font-size:9px;display:flex;align-items:center;justify-content:center;
+    color:var(--muted);font-weight:600;
+  }
+  .seat.taken{background:var(--muted);border-color:var(--muted);color:var(--ivory);cursor:not-allowed;}
+  .seat.mine{background:var(--ok);border-color:var(--ok);color:var(--ivory);}
+  .seat.selectable{cursor:pointer;}
+  .seat.selectable:hover{background:var(--gold-soft);}
+  .seat-summary{position:sticky;bottom:0;background:var(--ivory);padding:14px 0 4px;margin-top:14px;border-top:1px solid rgba(185,124,140,.3);}
+
+  /* ---------- extra request modal ---------- */
+  .extra-name-row{display:flex;gap:8px;margin-bottom:10px;align-items:center;}
+  .extra-name-row input{flex:1;}
+
+  /* ---------- admin ---------- */
+  .admin-wrap{max-width:920px;margin:0 auto;padding:24px 18px 60px;font-family:'Public Sans',sans-serif;}
+  .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+  .admin-tabs{display:flex;gap:6px;margin-bottom:22px;flex-wrap:wrap;}
+  .admin-tab{padding:9px 16px;border-radius:20px;border:1px solid var(--forest);background:transparent;color:var(--forest);font-size:13px;font-weight:600;}
+  .admin-tab.active{background:var(--forest);color:var(--ivory);}
+  .admin-table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;}
+  .admin-table th{text-align:left;background:var(--blush);padding:10px 12px;font-size:11px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);}
+  .admin-table td{padding:10px 12px;border-top:1px solid #eee;vertical-align:top;}
+  .admin-card{background:#fff;border:1px solid #eee;border-radius:10px;padding:16px;margin-bottom:12px;}
+  .link-box{display:flex;gap:6px;align-items:center;background:var(--blush);padding:6px 10px;border-radius:6px;font-size:12px;word-break:break-all;}
+  .lock-screen{max-width:340px;margin:80px auto;text-align:center;padding:0 20px;}
+
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--forest-deep);color:var(--ivory);padding:12px 20px;border-radius:30px;font-size:13px;z-index:200;box-shadow:0 6px 20px rgba(0,0,0,.25);}
+  .wa-fab{position:fixed;bottom:22px;right:22px;width:52px;height:52px;border-radius:50%;background:#2FAE60;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.28);z-index:40;text-decoration:none;}
+  .switcher{position:fixed;top:0;left:0;right:0;z-index:150;background:#111;color:#fff;font-size:11px;padding:6px 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-family:monospace;}
+  .switcher select,.switcher button,.switcher input{font-size:11px;padding:3px 6px;font-family:monospace;}
+  .switcher .tag{color:#BE9A4A;}
+</style>
+</head>
+<body>
+<div id="app"><div style="padding:40px;text-align:center;color:#999;font-family:sans-serif;">Cargando...</div></div>
+
+<script>
+/* =========================================================
+   CONFIGURACIÓN — edita aquí todos los datos reales de la boda
+   ========================================================= */
+const CONFIG = {
+  coupleShort: 'C & J',
+  coupleNames: 'Camacho & Jeanette',
+  weddingDateISO: '2026-11-07T17:00:00',
+  dateBadge: { day:'07', month:'NOVIEMBRE', year:'2026' },
+  welcomeMsg: 'Con el corazón lleno de alegría y la emoción en el aire, te invitamos a acompañarnos mientras nos unimos en matrimonio. Tu presencia hará de este día algo inolvidable.',
+  parents: {
+    bride: ['Inoscencia Arana B.', 'Ignacio Trujillo'],
+    groom: ['Mariana Camacho C.']
+  },
+  padrinos: [],
+  venue: {
+    name:'Terraza Casa',
+    address:'Avenida Diligencias 1427, San Felipe, Guanajuato',
+    mapUrl:'https://maps.app.goo.gl/kYb5RnhCUDk8KF2b9'
+  },
+  itinerary: [
+    { time:'5:00 PM', label:'Recepción' },
+    { time:'6:00 PM', label:'Ceremonia civil' },
+    { time:'6:00 PM', label:'Cóctel de bienvenida' },
+    { time:'—', label:'Vals' },
+    { time:'7:30 PM', label:'Cena' },
+    { time:'9:00 PM', label:'Baile' }
+  ],
+  giftTable:{ enabled:true, text:'Tu presencia es nuestro mejor regalo. Si deseas obsequiarnos algo, dejamos nuestra mesa de regalos en Liverpool, o si prefieres, puedes dejarnos algo en sobre o transferencia:', url:'https://mesaderegalos.liverpool.com.mx/milistaderegalos/60047552' },
+  photos:{
+    hero:'fotos/hero.jpg',
+    bienvenida:'fotos/bienvenida.jpg',
+    galeria:'fotos/galeria1.jpg',
+    cierre:'fotos/cierre.jpg'
+  },
+  bank:{ account:'4152 3143 5204 6976', holder:'Manuel Camacho Camacho', bankName:'BBVA' },
+  dressCode:{ title:'Formal', note:'El blanco y colores similares quedan reservados exclusivamente para la novia.' },
+  hashtag:'#CamachoYJeanette2026',
+  instagramUrl:'',
+  importantInfo:['Con cariño, hemos decidido celebrar este momento sin niños.'],
+  whatsapp:'524281075882',
+  adminPassword:'APS2026',
+  tables:10,
+  seatsPerTable:10
+};
+
+/* =========================================================
+   ESTADO Y ALMACENAMIENTO
+   ========================================================= */
+let guests = {};
+let seatmap = {};       // { "T-S": {guestId, name} }
+let extraRequests = [];
+let currentGuestId = null;
+let isAdminRoute = false;
+let adminAuthed = false;
+let modal = null;       // null | 'seatmap' | 'extra'
+let coverOpen = false;
+let coverAnimating = false;
+let toastMsg = null;
+let seatSelection = [];
+let extraCount = 1;
+let extraNames = [''];
+let adminTab = 'invitados';
+
+function seed(){
+  guests = {
+    'demo': { id:'demo', name:'', maxSeats:1, rsvpStatus:'pending', rsvpName:'', rsvpCount:0, seats:[] },
+    'familia-lopez': { id:'familia-lopez', name:'Familia López', maxSeats:4, rsvpStatus:'pending', rsvpName:'', rsvpCount:0, seats:[] },
+    'cecilia-lara': { id:'cecilia-lara', name:'Cecilia Lara', maxSeats:5, rsvpStatus:'pending', rsvpName:'', rsvpCount:0, seats:[] }
+  };
+  seatmap = {};
+  extraRequests = [];
+}
+
+async function loadAll(){
+  try{
+    const g = await window.storage.get('guests', true);
+    guests = g ? JSON.parse(g.value) : null;
+  }catch(e){ guests = null; }
+  try{
+    const s = await window.storage.get('seatmap', true);
+    seatmap = s ? JSON.parse(s.value) : null;
+  }catch(e){ seatmap = null; }
+  try{
+    const r = await window.storage.get('extraRequests', true);
+    extraRequests = r ? JSON.parse(r.value) : null;
+  }catch(e){ extraRequests = null; }
+
+  if(guests===null || seatmap===null || extraRequests===null){
+    seed();
+    await Promise.all([saveGuests(), saveSeatmap(), saveExtraRequests()]);
+  }
+}
+
+async function saveGuests(){
+  try{ await window.storage.set('guests', JSON.stringify(guests), true); }
+  catch(e){ showToast('No se pudo guardar (invitados).'); }
+}
+async function saveSeatmap(){
+  try{ await window.storage.set('seatmap', JSON.stringify(seatmap), true); }
+  catch(e){ showToast('No se pudo guardar (mesas).'); }
+}
+async function saveExtraRequests(){
+  try{ await window.storage.set('extraRequests', JSON.stringify(extraRequests), true); }
+  catch(e){ showToast('No se pudo guardar (solicitudes).'); }
+}
+
+function showToast(msg){
+  toastMsg = msg;
+  render();
+  setTimeout(()=>{ toastMsg=null; render(); }, 2600);
+}
+
+/* =========================================================
+   ROUTING (URL real + selector de prueba dentro del chat)
+   ========================================================= */
+function readRoute(){
+  const params = new URLSearchParams(window.location.search);
+  isAdminRoute = params.get('admin')==='1';
+  const idFromUrl = params.get('id');
+  if(idFromUrl) currentGuestId = idFromUrl;
+  else if(!currentGuestId) currentGuestId = Object.keys(guests)[0] || 'demo';
+}
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+function fmtCountdown(){
+  const target = new Date(CONFIG.weddingDateISO).getTime();
+  const now = Date.now();
+  let diff = Math.max(0, target-now);
+  const d = Math.floor(diff/86400000); diff-=d*86400000;
+  const h = Math.floor(diff/3600000); diff-=h*3600000;
+  const m = Math.floor(diff/60000); diff-=m*60000;
+  const s = Math.floor(diff/1000);
+  return {d,h,m,s};
+}
+
+function guestSeats(id){
+  return Object.entries(seatmap).filter(([k,v])=>v.guestId===id).map(([k])=>k);
+}
+
+function copyText(text){
+  navigator.clipboard?.writeText(text).then(()=>showToast('Copiado ✓')).catch(()=>showToast('No se pudo copiar'));
+}
+
+function inviteLink(id){
+  const url = new URL(window.location.href);
+  url.searchParams.set('id', id);
+  url.searchParams.delete('admin');
+  return url.toString();
+}
+
+function slug(str){
+  return str.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || ('inv-'+Date.now());
+}
+
+/* =========================================================
+   RENDER: INVITACIÓN
+   ========================================================= */
+function renderInvite(){
+  const g = guests[currentGuestId];
+  if(!g){
+    return `<div class="lock-screen"><h2 class="display" style="font-size:22px;">Invitación no encontrada</h2>
+      <p class="muted" style="margin-top:10px;">Este link no corresponde a ninguna invitación activa. Por favor usa el link que te compartimos por WhatsApp.</p></div>`;
+  }
+  const cd = fmtCountdown();
+  const mySeats = guestSeats(g.id);
+  const rsvpDone = g.rsvpStatus==='confirmed';
+  const rsvpDeclined = g.rsvpStatus==='declined';
+
+  return `
+  ${coverOpen ? '' : `
+  <div class="white-layer" id="whiteLayer"></div>
+  <div class="cover" id="coverEl" onclick="openCover()">
+    <div class="env-wrap">
+      <div class="env-card"></div>
+      <div class="env-flap" id="envFlap">
+        <div class="env-flap-shape"></div>
+        <div class="seal-wrap"><div class="seal" id="sealEl">${CONFIG.coupleShort}</div></div>
+      </div>
+    </div>
+    <div class="cover-caption">
+      <div class="tap">Toca para abrir</div>
+      <div class="chev"><span></span><span></span></div>
+    </div>
+  </div>`}
+
+  <div class="page">
+
+    <div class="hero" style="background-image:linear-gradient(180deg, rgba(58,20,32,.32), rgba(58,20,32,.6) 45%, rgba(58,20,32,.94) 100%), url('${CONFIG.photos.hero}');">
+      <div class="eyebrow">Nos casamos</div>
+      <h1>${g.name ? 'Con cariño para '+g.name : 'Nuestra Boda'}</h1>
+      <div class="names display">${CONFIG.coupleNames}</div>
+      <p class="msg">${CONFIG.welcomeMsg}</p>
+      <div class="countdown">
+        <div class="box"><div class="num">${cd.d}</div><div class="lab">Días</div></div>
+        <div class="box"><div class="num">${cd.h}</div><div class="lab">Hrs</div></div>
+        <div class="box"><div class="num">${cd.m}</div><div class="lab">Min</div></div>
+        <div class="box"><div class="num">${cd.s}</div><div class="lab">Seg</div></div>
+      </div>
+    </div>
+
+    <div class="photo-break">
+      <img src="${CONFIG.photos.bienvenida}" alt="${CONFIG.coupleNames}">
+      <div class="pb-caption"><div class="line">Dos historias que hoy se vuelven una</div></div>
+    </div>
+
+    <div class="section-tight">
+      <div class="fam-row">
+        <div class="fam-col">
+          <h3>Padres de la Novia</h3>
+          <p>${CONFIG.parents.bride.join('<br>&<br>')}</p>
+        </div>
+        <div class="fam-col">
+          <h3>Padres del Novio</h3>
+          <p>${CONFIG.parents.groom.join('<br>&<br>')}</p>
+        </div>
+      </div>
+      ${CONFIG.padrinos.length>0 ? `
+      <div class="divider"><span class="line"></span><span class="mark"></span><span class="line"></span></div>
+      <h3 style="font-size:12px;letter-spacing:.05em;color:var(--gold);text-transform:uppercase;margin-bottom:10px;">Padrinos</h3>
+      <p style="font-size:14px;">${CONFIG.padrinos.join(' &nbsp;&amp;&nbsp; ')}</p>` : ''}
+    </div>
+
+    <div class="section-tight">
+      <div class="event-card">
+        <h3>${CONFIG.venue.name}</h3>
+        <p>${CONFIG.venue.address}</p>
+        <a class="btn btn-sm" href="${CONFIG.venue.mapUrl}" target="_blank">Ir al mapa</a>
+      </div>
+      <div class="divider"><span class="line"></span><span class="mark"></span><span class="line"></span></div>
+      <h2 style="font-size:20px;margin-bottom:14px;">Itinerario</h2>
+      <div style="text-align:left;">
+        ${CONFIG.itinerary.map(i=>`
+          <div style="display:flex;justify-content:space-between;padding:9px 4px;border-bottom:1px solid rgba(185,124,140,.25);font-size:14px;">
+            <span>${i.label}</span><span style="color:var(--gold);font-weight:600;">${i.time}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="photo-break">
+      <img src="${CONFIG.photos.galeria}" alt="${CONFIG.coupleNames}">
+      <div class="pb-caption"><div class="line">Celebremos juntos este día</div></div>
+    </div>
+
+    <div class="section-tight">
+      <div class="divider"><span class="line"></span><span class="mark"></span><span class="line"></span></div>
+      <h2 style="font-size:20px;">Regalos</h2>
+      <p class="muted" style="margin-top:8px;">${CONFIG.giftTable.text}</p>
+      ${CONFIG.giftTable.enabled ? `<a class="btn btn-gold" style="margin-top:10px;" href="${CONFIG.giftTable.url}" target="_blank">Ver lista de deseos</a>` : ''}
+      <div class="bank-box">
+        <div class="eyebrow" style="margin-bottom:8px;">Lluvia de sobres / transferencia · ${CONFIG.bank.bankName}</div>
+        <div class="acct">${CONFIG.bank.account} <button class="copy-btn" onclick="copyText('${CONFIG.bank.account.replace(/\s/g,'')}')">Copiar</button></div>
+        <div class="muted" style="margin-top:4px;">${CONFIG.bank.holder}</div>
+      </div>
+    </div>
+
+    <div class="section-tight" style="text-align:left;">
+      <div class="divider"><span class="line"></span><span class="mark"></span><span class="line"></span></div>
+      <h2 style="font-size:20px;text-align:center;margin-bottom:16px;">Confirma tu asistencia</h2>
+      <div class="card">
+        <div style="margin-bottom:14px;">
+          Estado: <span class="status-pill status-${g.rsvpStatus}">${g.rsvpStatus==='pending'?'Pendiente':g.rsvpStatus==='confirmed'?'Confirmado':'No asistirá'}</span>
+        </div>
+        <div class="field">
+          <label>Nombre completo</label>
+          <input id="rsvpName" type="text" placeholder="Tu nombre completo" value="${g.rsvpName || g.name || ''}">
+        </div>
+        <div class="field">
+          <label>Número de invitados que asisten (máx. ${g.maxSeats})</label>
+          <input id="rsvpCount" type="number" min="1" max="${g.maxSeats}" value="${g.rsvpCount || 1}">
+        </div>
+        <div class="rsvp-choices">
+          <button class="btn btn-solid" style="flex:1;" onclick="submitRsvp('confirmed')">Sí, asistiré</button>
+          <button class="btn" style="flex:1;" onclick="submitRsvp('declined')">No podré ir</button>
+        </div>
+
+        ${rsvpDone ? `
+        <div style="margin-top:20px;border-top:1px solid rgba(185,124,140,.3);padding-top:16px;">
+          <div style="font-size:13px;margin-bottom:10px;">
+            ${mySeats.length>0
+              ? `Tu lugar está confirmado en: <b>${mySeats.map(s=>'Mesa '+s.split('-')[0]).join(', ')}</b>`
+              : 'Aún no has elegido tu lugar en las mesas.'}
+          </div>
+          <button class="btn btn-gold btn-block" onclick="openModal('seatmap')">${mySeats.length>0?'Cambiar mi lugar':'Seleccionar mi lugar'}</button>
+        </div>` : ''}
+
+        ${rsvpDeclined ? `<p class="muted" style="margin-top:14px;">Lamentamos que no puedas acompañarnos. ¡Gracias por avisarnos!</p>` : ''}
+
+        <div style="margin-top:18px;">
+          <button class="btn btn-sm" style="border-color:var(--muted);color:var(--muted);" onclick="openModal('extra')">¿Necesitas lugares extra? Solicítalos aquí</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-tight">
+      <div class="divider"><span class="line"></span><span class="mark"></span><span class="line"></span></div>
+      <h2 style="font-size:20px;">Código de Vestimenta</h2>
+      <p style="font-size:16px;margin-top:8px;font-family:'Fraunces',serif;">${CONFIG.dressCode.title}</p>
+      <p class="muted">${CONFIG.dressCode.note}</p>
+    </div>
+
+    <div class="section-tight">
+      <p class="muted">Comparte tus fotos con el hashtag</p>
+      ${CONFIG.instagramUrl ? `<a class="btn btn-sm" href="${CONFIG.instagramUrl}" target="_blank">${CONFIG.hashtag}</a>` : `<div class="btn btn-sm" style="opacity:.7;">${CONFIG.hashtag}</div>`}
+    </div>
+
+    <div class="section-tight" style="text-align:left;">
+      <div class="divider"><span class="line"></span><span class="mark"></span><span class="line"></span></div>
+      <h2 style="font-size:20px;text-align:center;margin-bottom:14px;">Información importante</h2>
+      ${CONFIG.importantInfo.map(t=>`<p class="info-line">${t}</p>`).join('')}
+    </div>
+
+    ${CONFIG.whatsapp ? `
+    <a href="https://api.whatsapp.com/send?phone=${CONFIG.whatsapp}" target="_blank" class="wa-fab" aria-label="Contactar por WhatsApp" title="¿Dudas o comentarios? Escríbenos">
+      <svg viewBox="0 0 32 32" width="26" height="26" fill="currentColor"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.36.68 4.55 1.86 6.4L4 29l7.77-1.8a11.98 11.98 0 0 0 4.25.77h.01c6.62 0 12.02-5.4 12.02-12.02C28.05 8.4 22.65 3 16.02 3zm7.02 17.13c-.3.83-1.5 1.55-2.42 1.75-.63.13-1.44.24-4.2-.9-3.53-1.46-5.8-5.03-5.98-5.27-.17-.24-1.44-1.92-1.44-3.66 0-1.74.9-2.6 1.24-2.96.29-.31.65-.4.87-.4.22 0 .43 0 .62.01.2.01.46-.08.72.55.27.65.9 2.25.98 2.42.08.17.13.36.02.58-.1.22-.16.36-.31.55-.16.2-.33.44-.47.59-.16.16-.32.34-.14.66.18.32.8 1.32 1.72 2.14 1.18 1.06 2.17 1.39 2.49 1.55.32.16.5.13.69-.08.19-.21.8-.93 1.02-1.25.22-.32.43-.27.72-.16.29.11 1.87.88 2.19 1.04.32.16.53.24.61.37.08.14.08.79-.22 1.61z"/></svg>
+    </a>` : ''}
+
+    <div class="photo-break" style="min-height:52vh;">
+      <img src="${CONFIG.photos.cierre}" alt="${CONFIG.coupleNames}">
+      <div class="pb-caption"><div class="line">Gracias por ser parte de nuestra historia</div></div>
+    </div>
+
+    <div class="footer">
+      <div class="names">${CONFIG.coupleNames}</div>
+      <div>Invitación digital</div>
+    </div>
+  </div>
+  `;
+}
+
+/* =========================================================
+   RENDER: MODAL MAPA DE MESAS
+   ========================================================= */
+function renderSeatmapModal(){
+  const g = guests[currentGuestId];
+  const existing = guestSeats(g.id);
+  if(seatSelection.length===0 && existing.length>0) seatSelection = [...existing];
+  const allowed = g.rsvpCount ? Math.min(g.rsvpCount, g.maxSeats) : g.maxSeats;
+
+  let tablesHtml = '';
+  for(let t=1;t<=CONFIG.tables;t++){
+    let rowsHtml = '';
+    const half = CONFIG.seatsPerTable/2;
+    for(let half_i=0; half_i<2; half_i++){
+      let seatsHtml='';
+      for(let s=1+half_i*half; s<=half*(half_i+1); s++){
+        const id = t+'-'+s;
+        const occ = seatmap[id];
+        const isMine = occ && occ.guestId===g.id;
+        const isSelecting = seatSelection.includes(id);
+        let cls='seat';
+        if(occ && !isMine) cls+=' taken';
+        else if(isMine || isSelecting) cls+=' mine';
+        else cls+=' selectable';
+        seatsHtml += `<div class="${cls}" title="${occ?occ.name:'Disponible'}" onclick="toggleSeat('${id}', ${allowed})">${s}</div>`;
+      }
+      rowsHtml += `<div class="seat-row">${seatsHtml}</div>`;
+    }
+    tablesHtml += `<div class="table-block"><div class="table-name">Mesa ${t}</div><div class="table-rect">${rowsHtml}</div></div>`;
+  }
+
+  return `
+  <div class="modal-overlay" onclick="closeModalBg(event)">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2 class="modal-title">Selecciona tu lugar</h2>
+      <p class="muted" style="margin-bottom:4px;">Puedes elegir hasta ${allowed} lugar(es). Los lugares tomados por otros invitados aparecen bloqueados.</p>
+      <div class="seat-legend">
+        <span><span class="dot avail"></span> Disponible</span>
+        <span><span class="dot taken"></span> Ocupado</span>
+        <span><span class="dot mine"></span> Tu selección</span>
+      </div>
+      <div class="tables-grid">${tablesHtml}</div>
+      <div class="seat-summary">
+        <div style="font-size:13px;margin-bottom:10px;">Seleccionados: ${seatSelection.length} / ${allowed}</div>
+        <button class="btn btn-solid btn-block" onclick="confirmSeats('${g.id}', ${allowed})">Confirmar lugar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* =========================================================
+   RENDER: MODAL SOLICITUD EXTRA
+   ========================================================= */
+function renderExtraModal(){
+  const g = guests[currentGuestId];
+  let namesHtml='';
+  for(let i=0;i<extraCount;i++){
+    namesHtml += `<div class="extra-name-row">
+      <input type="text" placeholder="Nombre completo del invitado extra ${i+1}" value="${extraNames[i]||''}" oninput="extraNames[${i}]=this.value">
+    </div>`;
+  }
+  return `
+  <div class="modal-overlay" onclick="closeModalBg(event)">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2 class="modal-title">Solicitar lugares extra</h2>
+      <p class="muted" style="margin-bottom:16px;">Esto es solo una solicitud para el anfitrión — no reserva un lugar en el mapa de mesas. Te contactaremos para confirmarlo.</p>
+      <div class="field">
+        <label>Cantidad de lugares extra</label>
+        <input type="number" min="1" max="10" value="${extraCount}" onchange="updateExtraCount(this.value)">
+      </div>
+      <div class="field">
+        <label>Nombres de los invitados extra</label>
+        ${namesHtml}
+      </div>
+      <button class="btn btn-solid btn-block" onclick="submitExtraRequest('${g.id}')">Enviar solicitud</button>
+    </div>
+  </div>`;
+}
+
+/* =========================================================
+   RENDER: ADMIN
+   ========================================================= */
+function renderAdmin(){
+  if(!adminAuthed){
+    return `
+    <div class="lock-screen">
+      <h2 class="display" style="font-size:22px;">Panel de administración</h2>
+      <div class="field" style="margin-top:20px;">
+        <input type="password" id="adminPass" placeholder="Contraseña" style="text-align:center;">
+      </div>
+      <button class="btn btn-solid btn-block" onclick="tryAdminLogin()">Entrar</button>
+    </div>`;
+  }
+
+  const guestList = Object.values(guests);
+  const confirmedCount = guestList.filter(g=>g.rsvpStatus==='confirmed').length;
+  const totalSeatsUsed = Object.keys(seatmap).length;
+
+  let body='';
+  if(adminTab==='invitados'){
+    body = `
+    <div style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+      <div class="muted">${guestList.length} invitaciones · ${confirmedCount} confirmadas · ${totalSeatsUsed} lugares ocupados</div>
+      <button class="btn btn-sm btn-solid" onclick="promptAddGuest()">+ Agregar invitado</button>
+    </div>
+    <table class="admin-table">
+      <tr><th>Invitado</th><th>Pases</th><th>Estado</th><th>Asistentes</th><th>Mesas</th><th>Link</th></tr>
+      ${guestList.map(g=>`
+        <tr>
+          <td><b>${g.name||g.id}</b><br><span class="muted">${g.id}</span></td>
+          <td>${g.maxSeats}</td>
+          <td><span class="status-pill status-${g.rsvpStatus}">${g.rsvpStatus}</span></td>
+          <td>${g.rsvpName ? g.rsvpName+' ('+(g.rsvpCount||0)+')' : '—'}</td>
+          <td>${guestSeats(g.id).join(', ')||'—'}</td>
+          <td><button class="btn btn-sm" onclick="copyText('${inviteLink(g.id)}')">Copiar link</button></td>
+        </tr>`).join('')}
+    </table>`;
+  } else if(adminTab==='mesas'){
+    let tablesHtml='';
+    for(let t=1;t<=CONFIG.tables;t++){
+      let seatsHtml='';
+      for(let s=1;s<=CONFIG.seatsPerTable;s++){
+        const id=t+'-'+s; const occ=seatmap[id];
+        seatsHtml+=`<div class="seat ${occ?'taken':''}" title="${occ?occ.name:'Libre'}">${s}</div>`;
+      }
+      tablesHtml+=`<div class="table-block"><div class="table-name">Mesa ${t}</div><div class="table-rect"><div class="seat-row">${seatsHtml}</div></div></div>`;
+    }
+    body = `<div class="tables-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));">${tablesHtml}</div>`;
+  } else if(adminTab==='extras'){
+    body = extraRequests.length===0 ? '<p class="muted">No hay solicitudes.</p>' : extraRequests.map(r=>`
+      <div class="admin-card">
+        <div><b>${r.guestName}</b> (invitación: ${r.guestId}) solicita <b>${r.extraCount}</b> lugar(es) extra</div>
+        <div class="muted" style="margin:6px 0;">Nombres: ${r.extraNames.join(', ')}</div>
+        <div style="margin-bottom:8px;">Estado: <span class="status-pill status-${r.status==='approved'?'confirmed':r.status==='denied'?'declined':'pending'}">${r.status}</span></div>
+        ${r.status==='pending' ? `
+          <button class="btn btn-sm btn-solid" onclick="approveExtra('${r.id}')">Aprobar y crear invitaciones</button>
+          <button class="btn btn-sm" onclick="denyExtra('${r.id}')">Rechazar</button>` : ''}
+        ${r.status==='approved' && r.newGuestIds ? `
+          <div style="margin-top:10px;">
+            ${r.newGuestIds.map(id=>`<div class="link-box" style="margin-bottom:6px;">${guests[id]?.name} — <button class="copy-btn" onclick="copyText('${inviteLink(id)}')">Copiar link</button></div>`).join('')}
+          </div>` : ''}
+      </div>`).join('');
+  }
+
+  return `
+  <div class="admin-wrap">
+    <div class="admin-header">
+      <h2 class="display" style="font-size:24px;">Panel — ${CONFIG.coupleNames}</h2>
+      <button class="btn btn-sm" onclick="adminAuthed=false;render();">Salir</button>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab ${adminTab==='invitados'?'active':''}" onclick="adminTab='invitados';render();">Invitados</button>
+      <button class="admin-tab ${adminTab==='mesas'?'active':''}" onclick="adminTab='mesas';render();">Mesas</button>
+      <button class="admin-tab ${adminTab==='extras'?'active':''}" onclick="adminTab='extras';render();">Solicitudes extra ${extraRequests.filter(r=>r.status==='pending').length>0?'('+extraRequests.filter(r=>r.status==='pending').length+')':''}</button>
+    </div>
+    ${body}
+  </div>`;
+}
+
+/* =========================================================
+   SWITCHER DE PRUEBA (solo para probar aquí en el chat)
+   ========================================================= */
+function renderSwitcher(){
+  return `
+  <div class="switcher">
+    <span class="tag">MODO PRUEBA</span>
+    <span>Invitado:</span>
+    <select onchange="currentGuestId=this.value;isAdminRoute=false;coverOpen=false;coverAnimating=false;seatSelection=[];render();">
+      ${Object.keys(guests).map(id=>`<option value="${id}" ${id===currentGuestId&&!isAdminRoute?'selected':''}>${guests[id].name||id}</option>`).join('')}
+    </select>
+    <button onclick="isAdminRoute=true;render();">Ver panel admin</button>
+    <span style="opacity:.6;">(en producción usarías ?id=xxx o ?admin=1 en la URL real)</span>
+  </div>`;
+}
+
+/* =========================================================
+   RENDER MAESTRO
+   ========================================================= */
+function render(){
+  let html = renderSwitcher();
+  if(isAdminRoute){
+    html += renderAdmin();
+  } else {
+    html += renderInvite();
+    if(modal==='seatmap') html += renderSeatmapModal();
+    if(modal==='extra') html += renderExtraModal();
+  }
+  if(toastMsg) html += `<div class="toast">${toastMsg}</div>`;
+  document.getElementById('app').innerHTML = html;
+}
+
+/* =========================================================
+   ACCIONES
+   ========================================================= */
+function openCover(){
+  if(coverAnimating || coverOpen) return;
+  coverAnimating = true;
+  const el = document.getElementById('coverEl');
+  const white = document.getElementById('whiteLayer');
+  if(!el) return;
+  el.classList.add('opening'); // fase 1: solapa se abre + sobre hace zoom y se desvanece (todo junto)
+  setTimeout(()=>{ white?.classList.add('hide'); }, 1350); // fase 2: capa blanca se desliza y desvanece
+  setTimeout(()=>{ coverOpen = true; coverAnimating = false; render(); }, 2950);
+}
+
+async function submitRsvp(status){
+  const g = guests[currentGuestId];
+  const name = document.getElementById('rsvpName').value.trim();
+  const count = parseInt(document.getElementById('rsvpCount').value) || 1;
+  if(status==='confirmed' && !name){ showToast('Por favor ingresa tu nombre.'); return; }
+  g.rsvpStatus = status;
+  g.rsvpName = name;
+  g.rsvpCount = Math.min(count, g.maxSeats);
+  await saveGuests();
+  render();
+  showToast(status==='confirmed' ? '¡Gracias por confirmar!' : 'Registramos tu respuesta.');
+}
+
+function openModal(name){ modal = name; seatSelection = []; extraCount=1; extraNames=['']; render(); }
+function closeModal(){ modal = null; render(); }
+function closeModalBg(e){ if(e.target.classList.contains('modal-overlay')) closeModal(); }
+
+function toggleSeat(id, allowed){
+  const occ = seatmap[id];
+  const g = guests[currentGuestId];
+  if(occ && occ.guestId!==g.id) return; // taken by someone else
+  if(seatSelection.includes(id)){
+    seatSelection = seatSelection.filter(s=>s!==id);
+  } else {
+    if(seatSelection.length>=allowed){ showToast('Ya seleccionaste el máximo de lugares permitidos.'); return; }
+    seatSelection.push(id);
+  }
+  render();
+}
+
+async function confirmSeats(guestId, allowed){
+  if(seatSelection.length===0){ showToast('Selecciona al menos un lugar.'); return; }
+  // liberar mis asientos previos
+  Object.keys(seatmap).forEach(k=>{ if(seatmap[k].guestId===guestId) delete seatmap[k]; });
+  seatSelection.forEach(id=>{ seatmap[id] = { guestId, name: guests[guestId].rsvpName || guests[guestId].name || guestId }; });
+  await saveSeatmap();
+  modal = null;
+  render();
+  showToast('¡Tu lugar quedó confirmado!');
+}
+
+function updateExtraCount(val){
+  extraCount = Math.max(1, Math.min(10, parseInt(val)||1));
+  while(extraNames.length<extraCount) extraNames.push('');
+  extraNames = extraNames.slice(0,extraCount);
+  render();
+}
+
+async function submitExtraRequest(guestId){
+  const g = guests[guestId];
+  if(extraNames.some(n=>!n.trim())){ showToast('Completa todos los nombres.'); return; }
+  extraRequests.push({
+    id:'req-'+Date.now(), guestId, guestName: g.rsvpName || g.name || guestId,
+    extraCount, extraNames:[...extraNames], status:'pending', createdAt:new Date().toISOString()
+  });
+  await saveExtraRequests();
+  modal = null;
+  render();
+  showToast('Solicitud enviada. Te contactaremos pronto.');
+}
+
+function tryAdminLogin(){
+  const val = document.getElementById('adminPass').value;
+  if(val===CONFIG.adminPassword){ adminAuthed = true; render(); }
+  else showToast('Contraseña incorrecta.');
+}
+
+function promptAddGuest(){
+  const name = prompt('Nombre del invitado o familia:');
+  if(!name) return;
+  const seats = parseInt(prompt('¿Cuántos pases (lugares) tiene esta invitación?', '1')) || 1;
+  const id = slug(name);
+  guests[id] = { id, name, maxSeats:seats, rsvpStatus:'pending', rsvpName:'', rsvpCount:0, seats:[] };
+  saveGuests().then(()=>{ render(); showToast('Invitado agregado. Copia y comparte su link.'); });
+}
+
+async function approveExtra(reqId){
+  const req = extraRequests.find(r=>r.id===reqId);
+  if(!req) return;
+  const newIds = [];
+  req.extraNames.forEach(name=>{
+    const id = slug(name)+'-x'+Math.floor(Math.random()*1000);
+    guests[id] = { id, name, maxSeats:1, rsvpStatus:'pending', rsvpName:'', rsvpCount:0, seats:[] };
+    newIds.push(id);
+  });
+  req.status = 'approved';
+  req.newGuestIds = newIds;
+  await saveGuests();
+  await saveExtraRequests();
+  render();
+  showToast('Invitaciones extra creadas.');
+}
+
+async function denyExtra(reqId){
+  const req = extraRequests.find(r=>r.id===reqId);
+  if(!req) return;
+  req.status = 'denied';
+  await saveExtraRequests();
+  render();
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+(async function init(){
+  await loadAll();
+  readRoute();
+  render();
+  setInterval(()=>{ if(!isAdminRoute && !modal && !coverAnimating) render(); }, 1000); // countdown tick
+})();
+</script>
+</body>
+</html>
