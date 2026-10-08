@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Camacho & Jeanette · Nuestra Boda</title>
+<title>Manuel & Jeanette · Nuestra Boda</title>
 <meta name="description" content="Te invitamos a celebrar nuestra boda · 07 de noviembre de 2026">
-<meta property="og:title" content="Camacho & Jeanette · Nuestra Boda">
+<meta property="og:title" content="Manuel & Jeanette · Nuestra Boda">
 <meta property="og:description" content="Te invitamos a celebrar nuestra boda · 07 de noviembre de 2026">
 <meta property="og:image" content="fotos/hero.jpg">
 <meta name="theme-color" content="#1a1214">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,6 +47,8 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 body.locked{ overflow:hidden; height:100dvh; }
+/* iOS convierte números en enlaces azules: se conserva el estilo original */
+a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decoration:none !important; font:inherit !important; }
 
 /* Fondo de escritorio: la invitación vive en una columna tipo teléfono */
 .backdrop{
@@ -1177,6 +1180,70 @@ body.locked{ overflow:hidden; height:100dvh; }
 .r-loading i{ width:9px; height:9px; border-radius:50%; background:#8a1a2c; animation:dots 1s ease-in-out infinite; }
 .r-loading i:nth-child(2){ animation-delay:.15s; } .r-loading i:nth-child(3){ animation-delay:.3s; }
 
+/* --- Solicitud de lugares adicionales --- */
+.more{
+  margin-top:20px; padding-top:16px;
+  border-top:1px dashed rgba(201,164,92,.55);
+}
+.more-form{
+  margin-top:14px; padding:18px 14px; border-radius:14px; text-align:center;
+  background:#fffdf8; box-shadow:inset 0 0 0 1px rgba(201,164,92,.5);
+}
+.more-form textarea{
+  width:100%; min-height:72px; margin-top:12px; padding:10px 12px; resize:vertical;
+  border-radius:10px; border:1px solid rgba(201,164,92,.7); background:#fff;
+  font-family:var(--serif); font-size:17px; color:var(--ink);
+}
+.more-form textarea:focus{ outline:2px solid rgba(138,26,44,.3); outline-offset:1px; }
+.more-sent{
+  margin-top:12px; padding:12px 14px; border-radius:12px;
+  background:rgba(201,164,92,.14); box-shadow:inset 0 0 0 1px rgba(201,164,92,.5);
+  font-family:var(--serif); font-size:16px; line-height:1.45; color:var(--ink);
+}
+.more-sent b{ color:#8a1a2c; }
+.wa-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  margin-top:12px; padding:12px 22px; border-radius:999px;
+  background:linear-gradient(160deg, #2a9d5c, #1d7a46); color:#fff;
+  font-family:var(--caps); font-weight:500; font-size:12px; letter-spacing:.16em; text-decoration:none;
+  box-shadow:0 10px 20px -10px rgba(29,122,70,.7);
+}
+.wa-btn svg{ width:18px; height:18px; }
+
+/* =========================================================
+   CONTACTO
+   ========================================================= */
+.contact{
+  position:relative;
+  background:var(--paper);
+  padding:10px 22px 110px;
+  text-align:center;
+  color:var(--wax-dark);
+  overflow:hidden;
+}
+.contact > *:not(.speckles){ position:relative; z-index:2; }
+.contact-icon{
+  width:86px; height:86px; margin:0 auto 18px; border-radius:50%;
+  display:grid; place-items:center;
+  background:radial-gradient(circle at 35% 30%, #a8283d, #7a1424 55%, #4a0a15);
+  box-shadow:0 0 0 1px rgba(201,164,92,.7), 0 0 0 6px var(--paper), 0 0 0 7px rgba(201,164,92,.4), 0 16px 26px -14px rgba(74,10,21,.7);
+  color:#fbf3e3;
+}
+.contact-icon svg{ width:42px; height:42px; }
+.contact-icon.in{ animation:ring 1.2s ease-in-out .6s 2; }
+.contact h2{
+  font-family:var(--caps); font-weight:500; font-size:17px; letter-spacing:.22em; padding-left:.22em; color:#8a1a2c;
+}
+.contact p{
+  font-family:var(--serif); font-size:20px; line-height:1.5; color:var(--ink);
+  max-width:320px; margin:12px auto 0;
+}
+.contact .g-btn{ margin-top:22px; }
+.contact-num{
+  margin-top:12px; font-family:var(--caps); font-size:12px; letter-spacing:.24em; color:#9a7f55;
+  font-variant-numeric:lining-nums;
+}
+
 /* Sobre personalizado */
 .env-label--bottom .env-guest{ display:block; margin-top:6px; font-family:var(--script); font-style:normal; font-size:32px; line-height:1.1; letter-spacing:0; color:var(--wax-dark); padding:0 20px; }
 .env-label--bottom .env-guest-for{ display:block; font-family:var(--caps); font-style:normal; font-size:10px; letter-spacing:.4em; padding-left:.4em; color:#9a7f55; }
@@ -1293,6 +1360,7 @@ body.locked{ overflow:hidden; height:100dvh; }
 }
 @keyframes dots{ 0%,100%{ transform:translateY(0); opacity:.4; } 50%{ transform:translateY(-6px); opacity:1; } }
 @keyframes outfitSway{ 0%,100%{ transform:rotate(0deg); } 50%{ transform:rotate(1.6deg); } }
+@keyframes ring{ 0%,100%{ transform:rotate(0); } 15%{ transform:rotate(-12deg); } 30%{ transform:rotate(10deg); } 45%{ transform:rotate(-8deg); } 60%{ transform:rotate(6deg); } 75%{ transform:rotate(-3deg); } }
 @keyframes tick{ from{ transform:translateY(-60%); opacity:0; } to{ transform:none; opacity:1; } }
 @keyframes burst{
   0%  { transform:translate(-50%,-50%) scale(1); opacity:1; }
@@ -1302,7 +1370,7 @@ body.locked{ overflow:hidden; height:100dvh; }
 @media (prefers-reduced-motion: reduce){
   .seal, .seal-glow, .hint svg, .dust i{ animation:none !important; }
   .flap, .seal-half, .hero-photo{ transition-duration:.01s !important; }
-  .sprig svg, .in .rings .shine, .v-btn::after, .g-btn::after, .bank-card::before, .closing-seal, .closing-dust i, .outfit svg{ animation:none !important; }
+  .sprig svg, .in .rings .shine, .v-btn::after, .g-btn::after, .bank-card::before, .closing-seal, .closing-dust i, .outfit svg, .contact-icon.in{ animation:none !important; }
   .swatch{ opacity:1; transform:none; transition:none; }
   .reveal{ opacity:1; transform:none; transition:none; }
   .tl-node, .tl-icon, .tl-text{ opacity:1 !important; transform:none !important; transition:none !important; }
@@ -1328,7 +1396,7 @@ body.locked{ overflow:hidden; height:100dvh; }
 
   <div class="env-label env-label--top">
     <small>Nuestra boda</small>
-    <span>Camacho &amp; Jeanette</span>
+    <span>Manuel &amp; Jeanette</span>
   </div>
 
   <div class="seal-wrap">
@@ -1357,7 +1425,7 @@ body.locked{ overflow:hidden; height:100dvh; }
     <div class="hero-photo"></div>
     <div class="hero-content">
       <small>¡Nos casamos!</small>
-      <h1>Camacho <em>&amp;</em> Jeanette</h1>
+      <h1>Manuel <em>&amp;</em> Jeanette</h1>
       <p>07 · 11 · 2026</p>
       <div class="countdown" id="countdown" aria-label="Cuenta regresiva para la boda">
         <div class="cd-unit"><span class="cd-num" data-k="d"><span>00</span></span><span class="cd-label">Días</span></div>
@@ -1378,7 +1446,7 @@ body.locked{ overflow:hidden; height:100dvh; }
 
     <p class="w-kicker reveal">Nuestra</p>
     <h2 class="w-title reveal" style="--d:.15s">Boda</h2>
-    <p class="w-names reveal" style="--d:.3s">Camacho &amp; Jeanette</p>
+    <p class="w-names reveal" style="--d:.3s">Manuel &amp; Jeanette</p>
 
     <div class="reveal" style="--d:.4s">
       <svg class="rings" viewBox="0 0 112 84" aria-hidden="true">
@@ -1451,7 +1519,7 @@ body.locked{ overflow:hidden; height:100dvh; }
 
   <!-- ===================== FOTO COMPLETA ===================== -->
   <section class="photo-full" id="fotoCompleta">
-    <img src="fotos/welcome-web.jpg" alt="Camacho y Jeanette" loading="lazy" decoding="async">
+    <img src="fotos/welcome-web.jpg" alt="Manuel y Jeanette" loading="lazy" decoding="async">
     <svg class="garland" aria-hidden="true">
       <defs>
         <pattern id="garlandTile" width="124" height="78" patternUnits="userSpaceOnUse" x="-20">
@@ -1521,7 +1589,7 @@ body.locked{ overflow:hidden; height:100dvh; }
   <!-- ===================== FOTO GALERÍA ===================== -->
   <section class="portrait">
     <div class="portrait-frame reveal reveal--zoom">
-      <div class="portrait-img"><img src="fotos/galeria1.jpg" alt="Camacho y Jeanette abrazados" loading="lazy" decoding="async"></div>
+      <div class="portrait-img"><img src="fotos/galeria1.jpg" alt="Manuel y Jeanette abrazados" loading="lazy" decoding="async"></div>
     </div>
   </section>
 
@@ -1590,7 +1658,7 @@ body.locked{ overflow:hidden; height:100dvh; }
       <div class="bank-card" id="bankCard">
         <div class="bc-top">
           <span class="bc-bank">BBVA</span>
-          <span class="bc-mono">C &amp; J</span>
+          <span class="bc-mono">M &amp; J</span>
         </div>
         <span class="bc-chip" aria-hidden="true"></span>
         <span class="bc-number" id="accNumber" aria-label="Número de tarjeta 4152 3143 5204 6976">4152 3143 5204 6976</span>
@@ -1613,11 +1681,11 @@ body.locked{ overflow:hidden; height:100dvh; }
     <p class="gal-intro reveal" style="--d:.3s">Un pedacito de nuestra historia</p>
 
     <div class="polaroids" id="polaroids">
-      <button class="polaroid reveal" type="button" data-i="0" aria-label="Ver foto 1 de 5"><img src="fotos/galeria2-web.jpg" alt="Camacho abraza a Jeanette por la espalda" loading="lazy" decoding="async"></button>
-      <button class="polaroid reveal" type="button" data-i="1" aria-label="Ver foto 2 de 5"><img src="fotos/galeria3-web.jpg" alt="Camacho y Jeanette abrazados de pie" loading="lazy" decoding="async"></button>
-      <button class="polaroid reveal" type="button" data-i="2" aria-label="Ver foto 3 de 5"><img src="fotos/galeria4-web.jpg" alt="Camacho besa la frente de Jeanette" loading="lazy" decoding="async"></button>
-      <button class="polaroid reveal" type="button" data-i="3" aria-label="Ver foto 4 de 5"><img src="fotos/galeria5-web.jpg" alt="Jeanette abraza a Camacho, que sonríe sentado" loading="lazy" decoding="async"></button>
-      <button class="polaroid reveal" type="button" data-i="4" aria-label="Ver foto 5 de 5"><img src="fotos/galeria6-web.jpg" alt="Jeanette besa a Camacho" loading="lazy" decoding="async"></button>
+      <button class="polaroid reveal" type="button" data-i="0" aria-label="Ver foto 1 de 5"><img src="fotos/galeria2-web.jpg" alt="Manuel abraza a Jeanette por la espalda" loading="lazy" decoding="async"></button>
+      <button class="polaroid reveal" type="button" data-i="1" aria-label="Ver foto 2 de 5"><img src="fotos/galeria3-web.jpg" alt="Manuel y Jeanette abrazados de pie" loading="lazy" decoding="async"></button>
+      <button class="polaroid reveal" type="button" data-i="2" aria-label="Ver foto 3 de 5"><img src="fotos/galeria4-web.jpg" alt="Manuel besa la frente de Jeanette" loading="lazy" decoding="async"></button>
+      <button class="polaroid reveal" type="button" data-i="3" aria-label="Ver foto 4 de 5"><img src="fotos/galeria5-web.jpg" alt="Jeanette abraza a Manuel, que sonríe sentado" loading="lazy" decoding="async"></button>
+      <button class="polaroid reveal" type="button" data-i="4" aria-label="Ver foto 5 de 5"><img src="fotos/galeria6-web.jpg" alt="Jeanette besa a Manuel" loading="lazy" decoding="async"></button>
     </div>
   </section>
 
@@ -1794,6 +1862,24 @@ body.locked{ overflow:hidden; height:100dvh; }
     </div>
   </section>
 
+  <!-- ===================== CONTACTO ===================== -->
+  <section class="contact" id="contacto">
+    <canvas class="speckles" aria-hidden="true"></canvas>
+    <div class="contact-icon reveal reveal--zoom" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M24 5C13.5 5 5 13 5 23c0 3.6 1.1 7 3 9.8L6 43l10.6-2.8c2.3 1.1 4.8 1.7 7.4 1.7 10.5 0 19-8 19-18.9S34.5 5 24 5z"/>
+        <path d="M17.5 15.5c.6-.6 1.6-.6 2.1.1l2 2.8c.4.6.4 1.4-.1 1.9l-1.2 1.2c1 2.2 2.8 4 5 5l1.2-1.2c.5-.5 1.3-.6 1.9-.1l2.8 2c.7.5.7 1.5.1 2.1l-1.3 1.3c-1 1-2.5 1.3-3.8.8-4.6-1.8-8.3-5.5-10.1-10.1-.5-1.3-.2-2.8.8-3.8z" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <h2 class="reveal" style="--d:.15s">¿Dudas o comentarios?</h2>
+    <p class="reveal" style="--d:.3s">Si tienes alguna duda, comentario o algo no funciona como debería, escríbenos con toda confianza.</p>
+    <a class="g-btn reveal" style="--d:.45s" id="contactBtn" href="https://wa.me/524281075882" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.6 7.3L3 20.5l1.7-5.2A8.4 8.4 0 1 1 21 11.5z"/></svg>
+      Contactar por WhatsApp
+    </a>
+    <p class="contact-num reveal" style="--d:.55s">428 107 5882</p>
+  </section>
+
   <!-- ===================== CIERRE ===================== -->
   <section class="closing" id="cierre">
     <svg class="closing-wave" viewBox="0 0 400 70" preserveAspectRatio="none" aria-hidden="true">
@@ -1802,7 +1888,7 @@ body.locked{ overflow:hidden; height:100dvh; }
     </svg>
 
     <div class="closing-photo">
-      <img src="fotos/cierre.jpg" alt="Camacho y Jeanette sonriendo frente a frente" loading="lazy" decoding="async">
+      <img src="fotos/cierre.jpg" alt="Manuel y Jeanette sonriendo frente a frente" loading="lazy" decoding="async">
       <div class="closing-dust" id="closingDust" aria-hidden="true"></div>
     </div>
 
@@ -1814,7 +1900,7 @@ body.locked{ overflow:hidden; height:100dvh; }
         Gracias por ser parte de nuestra historia. Será un honor compartir contigo
         el día en que comenzamos nuestra vida juntos.
       </p>
-      <p class="closing-sign reveal" style="--d:.45s">Camacho &amp; Jeanette</p>
+      <p class="closing-sign reveal" style="--d:.45s">Manuel &amp; Jeanette</p>
       <p class="closing-date reveal" style="--d:.55s">07 · 11 · 2026</p>
       <div class="closing-line reveal" style="--d:.65s"></div>
       <p class="closing-foot reveal" style="--d:.75s">Hecho con amor para nuestro gran día</p>
@@ -1919,7 +2005,7 @@ body.locked{ overflow:hidden; height:100dvh; }
     <circle r="72" fill="none" stroke="#3a0710" stroke-opacity=".5" stroke-width="3"/>
     <circle r="70" fill="none" stroke="#c9566a" stroke-opacity=".35" stroke-width="1.2" transform="translate(-1 -1)"/>
     <circle r="62" fill="none" stroke="url(#goldGrad)" stroke-width="1" stroke-dasharray="1.5 4" opacity=".75"/>
-    <text class="seal-mono" x="0" y="16" text-anchor="middle" font-size="58" fill="url(#goldGrad)">C<tspan font-size="32" dy="-6" dx="3">&amp;</tspan><tspan dy="6" dx="3">J</tspan></text>
+    <text class="seal-mono" x="0" y="16" text-anchor="middle" font-size="58" fill="url(#goldGrad)">M<tspan font-size="32" dy="-6" dx="3">&amp;</tspan><tspan dy="6" dx="3">J</tspan></text>
     <ellipse cx="-34" cy="-46" rx="22" ry="9" fill="#fff" opacity=".13" transform="rotate(-35 -34 -46)"/>
   </svg>
 </template>
@@ -2263,6 +2349,7 @@ body.locked{ overflow:hidden; height:100dvh; }
     SEAT_TAKEN:          'Uno de tus asientos acaba de ser ocupado por alguien más. Elige otro, por favor.',
     SEAT_COUNT_MISMATCH: 'El número de asientos no coincide con las personas que asistirán.',
     INVALID_COUNT:       'El número de personas no es válido para esta invitación.',
+    REQUEST_PENDING:     'Ya tienes una solicitud en revisión. Te avisaremos pronto.',
     NETWORK:             'No pudimos conectarnos. Revisa tu internet e intenta de nuevo.'
   };
   const errMsg = e => ERRORS[e.message] || 'Ocurrió un error. Intenta de nuevo en un momento.';
@@ -2278,8 +2365,72 @@ body.locked{ overflow:hidden; height:100dvh; }
     sel: [],            // asientos elegidos ('mesa-asiento'), en orden
     busy: false,
     sheetT: null,
-    poll: null
+    poll: null,
+    reqOpen: false,     // formulario de lugares adicionales abierto
+    reqExtra: 1,
+    reqNote: ''
   };
+
+  const WHATSAPP = '524281075882';
+  const waLink = text => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
+  const waIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.6 7.3L3 20.5l1.7-5.2A8.4 8.4 0 1 1 21 11.5z"/></svg>';
+
+  // Bloque "¿Necesitas más lugares?" (se muestra al confirmar y después de confirmar)
+  function moreBlock(){
+    const inv = R.inv;
+    if (!inv || !inv.open) return '';
+    const req = inv.request;
+    const room = Math.min(5, 10 - inv.max);   // una invitación puede llegar a 10 lugares como máximo
+
+    if (req && req.status === 'pending'){
+      const msg = `Hola, somos ${inv.name} (invitación ${inv.code}). Solicitamos ${req.extra} ${plural(req.extra, 'lugar adicional', 'lugares adicionales')} para la boda.`;
+      return `<div class="more"><div class="more-sent">
+        Solicitaste <b>${req.extra} ${plural(req.extra, 'lugar adicional', 'lugares adicionales')}</b>.
+        Los novios revisarán tu solicitud y te avisarán.
+        <br><a class="wa-btn" href="${waLink(msg)}" target="_blank" rel="noopener">${waIcon} Avisar por WhatsApp</a>
+      </div></div>`;
+    }
+
+    const note = req && req.status === 'approved'
+      ? `<div class="more-sent">¡Buenas noticias! Aprobamos tu solicitud: ahora tienes <b>${inv.max} ${plural(inv.max, 'lugar', 'lugares')}</b>.</div>`
+      : req && req.status === 'rejected'
+        ? `<div class="more-sent">Por ahora no fue posible agregar más lugares. ¡Gracias por entender!</div>`
+        : '';
+    if (room < 1) return note ? `<div class="more">${note}</div>` : '';
+
+    if (!R.reqOpen){
+      return `<div class="more">${note}<button class="r-link" type="button" data-act="reqOpen">¿Necesitas más lugares?</button></div>`;
+    }
+    const extra = Math.min(R.reqExtra, room);
+    return `<div class="more">${note}<div class="more-form">
+      <p class="r-q" style="margin-top:0">¿Cuántos lugares adicionales?</p>
+      <div class="stepper">
+        <button type="button" data-act="reqExtra" data-d="-1" aria-label="Un lugar menos" ${extra <= 1 ? 'disabled' : ''}>−</button>
+        <output aria-live="polite">${extra}</output>
+        <button type="button" data-act="reqExtra" data-d="1" aria-label="Un lugar más" ${extra >= room ? 'disabled' : ''}>+</button>
+      </div>
+      <textarea id="reqNote" maxlength="300" placeholder="¿Para quién son? (opcional)">${esc(R.reqNote)}</textarea>
+      <p class="r-hint">Los lugares son limitados; los novios revisarán tu solicitud.</p>
+      <div class="r-actions" style="margin-top:14px">
+        <button class="g-btn" type="button" data-act="reqSend" ${R.busy ? 'disabled' : ''}>${R.busy ? 'Enviando…' : 'Enviar solicitud'}</button>
+        <button class="r-link" type="button" data-act="reqCancel">Cancelar</button>
+      </div>
+    </div></div>`;
+  }
+
+  async function sendRequest(){
+    if (R.busy) return;
+    R.busy = true; render();
+    try {
+      const extra = Math.min(R.reqExtra, Math.min(5, 10 - R.inv.max));
+      R.inv = await rpc('request_more_seats', { p_code:R.code, p_extra:extra, p_note:R.reqNote });
+      R.reqOpen = false; R.reqNote = ''; R.reqExtra = 1;
+      showToast('¡Solicitud enviada! Avísanos también por WhatsApp');
+    } catch (e){
+      showToast(errMsg(e));
+    }
+    R.busy = false; render();
+  }
 
   function seatState(t, s){
     const k = key(t, s);
@@ -2372,7 +2523,8 @@ body.locked{ overflow:hidden; height:100dvh; }
               <button type="button" data-act="count" data-d="1" aria-label="Una persona más" ${R.count >= max ? 'disabled' : ''}>+</button>
             </div>
             <p class="r-hint">Máximo ${max} ${plural(max, 'persona', 'personas')}</p>` : ''}
-            <div class="r-actions"><button class="g-btn" type="button" data-act="toSeats">Elegir ${plural(R.count, 'mi asiento', 'nuestros asientos')}</button></div>` : ''}
+            <div class="r-actions"><button class="g-btn" type="button" data-act="toSeats">Elegir ${plural(R.count, 'mi asiento', 'nuestros asientos')}</button></div>
+            ${moreBlock()}` : ''}
           ${R.going === false ? `
             <p class="r-text">Lamentamos que no puedan acompañarnos. ¿Confirmas que no asistirán?</p>
             <div class="r-actions"><button class="g-btn" type="button" data-act="decline" ${R.busy ? 'disabled' : ''}>${R.busy ? 'Enviando…' : 'Confirmar'}</button></div>` : ''}
@@ -2392,6 +2544,7 @@ body.locked{ overflow:hidden; height:100dvh; }
             <button class="g-btn" type="button" data-act="submit" ${done && !R.busy ? '' : 'disabled'}>${R.busy ? 'Confirmando…' : 'Confirmar asistencia'}</button>
             <button class="r-link" type="button" data-act="back">Cambiar número de personas</button>
           </div>
+          ${moreBlock()}
         </div>`;
       }
 
@@ -2409,6 +2562,7 @@ body.locked{ overflow:hidden; height:100dvh; }
           ${body}
           ${inv.open ? `<div class="r-actions"><button class="r-link" type="button" data-act="edit">Modificar mi confirmación</button>
             <p class="r-hint">Puedes hacer cambios hasta el 15 de octubre</p></div>` : ''}
+          ${inv.status === 'confirmed' ? moreBlock() : ''}
         </div>`;
       }
     }
@@ -2436,7 +2590,7 @@ body.locked{ overflow:hidden; height:100dvh; }
   function startPolling(){
     if (R.poll) return;
     R.poll = setInterval(async () => {
-      if (document.hidden || R.busy) return;
+      if (document.hidden || R.busy || R.reqOpen) return; // no interrumpir mientras escriben la solicitud
       try { await refreshMap(); render(); } catch {}
     }, 8000);
   }
@@ -2449,6 +2603,7 @@ body.locked{ overflow:hidden; height:100dvh; }
       const [inv] = await Promise.all([ rpc('get_invitation', { p_code:R.code }), refreshMap() ]);
       R.inv = inv;
       personalizeEnvelope(inv.name);
+      setContactLink(inv.name);
       if (inv.status !== 'pending') R.step = 'done';
       else R.step = inv.open ? 'ask' : 'closed';
     } catch (e){
@@ -2519,6 +2674,17 @@ body.locked{ overflow:hidden; height:100dvh; }
     render();
   }
 
+  app.addEventListener('input', e => { if (e.target.id === 'reqNote') R.reqNote = e.target.value; });
+
+  // Botón de contacto: mensaje listo, con el nombre de la familia si entró con su enlace
+  function setContactLink(name){
+    const msg = name
+      ? `Hola, somos ${name} (invitación ${R.code}). Tenemos una duda sobre la invitación de boda de Manuel & Jeanette.`
+      : 'Hola, tengo una duda sobre la invitación de boda de Manuel & Jeanette.';
+    document.getElementById('contactBtn').href = waLink(msg);
+  }
+  setContactLink(null);
+
   app.addEventListener('click', e => {
     const b = e.target.closest('[data-act]');
     if (!b || b.disabled) return;
@@ -2540,6 +2706,10 @@ body.locked{ overflow:hidden; height:100dvh; }
       case 'unpick': R.sel = R.sel.filter(k => k !== b.dataset.k); render(); break;
       case 'submit': submit(R.count); break;
       case 'decline': submit(0); break;
+      case 'reqOpen':   R.reqOpen = true; render(); document.getElementById('reqNote')?.scrollIntoView({ behavior:'smooth', block:'center' }); break;
+      case 'reqCancel': R.reqOpen = false; render(); break;
+      case 'reqExtra':  R.reqExtra = Math.min(Math.max(R.reqExtra + Number(b.dataset.d), 1), 5); render(); break;
+      case 'reqSend':   sendRequest(); break;
       case 'edit':
         R.going = R.inv.status === 'confirmed' ? true : null;
         R.count = Math.max(R.inv.attending, 1);

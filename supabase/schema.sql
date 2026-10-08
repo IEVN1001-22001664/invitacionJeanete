@@ -1,5 +1,5 @@
 -- =====================================================================
---  Invitación Camacho & Jeanette · Confirmación de asistencia y asientos
+--  Invitación Manuel & Jeanette · Confirmación de asistencia y asientos
 --  Ejecutar completo una sola vez en Supabase → SQL Editor → New query
 -- =====================================================================
 --  Diseño:
