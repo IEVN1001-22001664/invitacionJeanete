@@ -1180,36 +1180,6 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
 .r-loading i{ width:9px; height:9px; border-radius:50%; background:#8a1a2c; animation:dots 1s ease-in-out infinite; }
 .r-loading i:nth-child(2){ animation-delay:.15s; } .r-loading i:nth-child(3){ animation-delay:.3s; }
 
-/* --- Solicitud de lugares adicionales --- */
-.more{
-  margin-top:20px; padding-top:16px;
-  border-top:1px dashed rgba(201,164,92,.55);
-}
-.more-form{
-  margin-top:14px; padding:18px 14px; border-radius:14px; text-align:center;
-  background:#fffdf8; box-shadow:inset 0 0 0 1px rgba(201,164,92,.5);
-}
-.more-form textarea{
-  width:100%; min-height:72px; margin-top:12px; padding:10px 12px; resize:vertical;
-  border-radius:10px; border:1px solid rgba(201,164,92,.7); background:#fff;
-  font-family:var(--serif); font-size:17px; color:var(--ink);
-}
-.more-form textarea:focus{ outline:2px solid rgba(138,26,44,.3); outline-offset:1px; }
-.more-sent{
-  margin-top:12px; padding:12px 14px; border-radius:12px;
-  background:rgba(201,164,92,.14); box-shadow:inset 0 0 0 1px rgba(201,164,92,.5);
-  font-family:var(--serif); font-size:16px; line-height:1.45; color:var(--ink);
-}
-.more-sent b{ color:#8a1a2c; }
-.wa-btn{
-  display:inline-flex; align-items:center; justify-content:center; gap:10px;
-  margin-top:12px; padding:12px 22px; border-radius:999px;
-  background:linear-gradient(160deg, #2a9d5c, #1d7a46); color:#fff;
-  font-family:var(--caps); font-weight:500; font-size:12px; letter-spacing:.16em; text-decoration:none;
-  box-shadow:0 10px 20px -10px rgba(29,122,70,.7);
-}
-.wa-btn svg{ width:18px; height:18px; }
-
 /* =========================================================
    CONTACTO
    ========================================================= */
@@ -2333,7 +2303,6 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
     SEAT_TAKEN:          'Uno de tus asientos acaba de ser ocupado por alguien más. Elige otro, por favor.',
     SEAT_COUNT_MISMATCH: 'El número de asientos no coincide con las personas que asistirán.',
     INVALID_COUNT:       'El número de personas no es válido para esta invitación.',
-    REQUEST_PENDING:     'Ya tienes una solicitud en revisión. Te avisaremos pronto.',
     NETWORK:             'No pudimos conectarnos. Revisa tu internet e intenta de nuevo.'
   };
   const errMsg = e => ERRORS[e.message] || 'Ocurrió un error. Intenta de nuevo en un momento.';
@@ -2349,73 +2318,11 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
     sel: [],            // asientos elegidos ('mesa-asiento'), en orden
     busy: false,
     sheetT: null,
-    poll: null,
-    reqOpen: false,     // formulario de lugares adicionales abierto
-    reqExtra: 1,
-    reqNote: ''
+    poll: null
   };
 
   const WHATSAPP = '524281075882';
   const waLink = text => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
-  const waIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.6 7.3L3 20.5l1.7-5.2A8.4 8.4 0 1 1 21 11.5z"/></svg>';
-
-  // Bloque "¿Necesitas más lugares?" (se muestra al confirmar y después de confirmar)
-  function moreBlock(){
-    const inv = R.inv;
-    if (!inv || !inv.open) return '';
-    const req = inv.request;
-    const room = Math.min(5, 10 - inv.max);   // una invitación puede llegar a 10 lugares como máximo
-
-    if (req && req.status === 'pending'){
-      const msg = `Hola, somos ${inv.name} (invitación ${inv.code}). Solicitamos ${req.extra} ${plural(req.extra, 'lugar adicional', 'lugares adicionales')} para la boda.`;
-      return `<div class="more"><div class="more-sent">
-        Solicitaste <b>${req.extra} ${plural(req.extra, 'lugar adicional', 'lugares adicionales')}</b>.
-        Los novios revisarán tu solicitud y te avisarán.
-        <br><a class="wa-btn" href="${waLink(msg)}" target="_blank" rel="noopener">${waIcon} Avisar por WhatsApp</a>
-      </div></div>`;
-    }
-
-    const note = req && req.status === 'approved'
-      ? `<div class="more-sent">¡Buenas noticias! Aprobamos tu solicitud: ahora tienes <b>${inv.max} ${plural(inv.max, 'lugar', 'lugares')}</b>.</div>`
-      : req && req.status === 'rejected'
-        ? `<div class="more-sent">Por ahora no fue posible agregar más lugares. ¡Gracias por entender!</div>`
-        : '';
-    if (room < 1) return note ? `<div class="more">${note}</div>` : '';
-
-    if (!R.reqOpen){
-      return `<div class="more">${note}<button class="r-link" type="button" data-act="reqOpen">¿Necesitas más lugares?</button></div>`;
-    }
-    const extra = Math.min(R.reqExtra, room);
-    return `<div class="more">${note}<div class="more-form">
-      <p class="r-q" style="margin-top:0">¿Cuántos lugares adicionales?</p>
-      <div class="stepper">
-        <button type="button" data-act="reqExtra" data-d="-1" aria-label="Un lugar menos" ${extra <= 1 ? 'disabled' : ''}>−</button>
-        <output aria-live="polite">${extra}</output>
-        <button type="button" data-act="reqExtra" data-d="1" aria-label="Un lugar más" ${extra >= room ? 'disabled' : ''}>+</button>
-      </div>
-      <textarea id="reqNote" maxlength="300" placeholder="¿Para quién son? (opcional)">${esc(R.reqNote)}</textarea>
-      <p class="r-hint">Los lugares son limitados; los novios revisarán tu solicitud.</p>
-      <div class="r-actions" style="margin-top:14px">
-        <button class="g-btn" type="button" data-act="reqSend" ${R.busy ? 'disabled' : ''}>${R.busy ? 'Enviando…' : 'Enviar solicitud'}</button>
-        <button class="r-link" type="button" data-act="reqCancel">Cancelar</button>
-      </div>
-    </div></div>`;
-  }
-
-  async function sendRequest(){
-    if (R.busy) return;
-    R.busy = true; render();
-    try {
-      const extra = Math.min(R.reqExtra, Math.min(5, 10 - R.inv.max));
-      R.inv = await rpc('request_more_seats', { p_code:R.code, p_extra:extra, p_note:R.reqNote });
-      R.reqOpen = false; R.reqNote = ''; R.reqExtra = 1;
-      showToast('¡Solicitud enviada! Avísanos también por WhatsApp');
-    } catch (e){
-      showToast(errMsg(e));
-    }
-    R.busy = false; render();
-  }
-
   function seatState(t, s){
     const k = key(t, s);
     if (R.sel.includes(k)) return 'sel';
@@ -2507,8 +2414,7 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
               <button type="button" data-act="count" data-d="1" aria-label="Una persona más" ${R.count >= max ? 'disabled' : ''}>+</button>
             </div>
             <p class="r-hint">Máximo ${max} ${plural(max, 'persona', 'personas')}</p>` : ''}
-            <div class="r-actions"><button class="g-btn" type="button" data-act="toSeats">Elegir ${plural(R.count, 'mi asiento', 'nuestros asientos')}</button></div>
-            ${moreBlock()}` : ''}
+            <div class="r-actions"><button class="g-btn" type="button" data-act="toSeats">Elegir ${plural(R.count, 'mi asiento', 'nuestros asientos')}</button></div>` : ''}
           ${R.going === false ? `
             <p class="r-text">Lamentamos que no puedan acompañarnos. ¿Confirmas que no asistirán?</p>
             <div class="r-actions"><button class="g-btn" type="button" data-act="decline" ${R.busy ? 'disabled' : ''}>${R.busy ? 'Enviando…' : 'Confirmar'}</button></div>` : ''}
@@ -2528,7 +2434,6 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
             <button class="g-btn" type="button" data-act="submit" ${done && !R.busy ? '' : 'disabled'}>${R.busy ? 'Confirmando…' : 'Confirmar asistencia'}</button>
             <button class="r-link" type="button" data-act="back">Cambiar número de personas</button>
           </div>
-          ${moreBlock()}
         </div>`;
       }
 
@@ -2546,7 +2451,6 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
           ${body}
           ${inv.open ? `<div class="r-actions"><button class="r-link" type="button" data-act="edit">Modificar mi confirmación</button>
             <p class="r-hint">Puedes hacer cambios hasta el 15 de octubre</p></div>` : ''}
-          ${inv.status === 'confirmed' ? moreBlock() : ''}
         </div>`;
       }
     }
@@ -2574,7 +2478,7 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
   function startPolling(){
     if (R.poll) return;
     R.poll = setInterval(async () => {
-      if (document.hidden || R.busy || R.reqOpen) return; // no interrumpir mientras escriben la solicitud
+      if (document.hidden || R.busy) return;
       try { await refreshMap(); render(); } catch {}
     }, 8000);
   }
@@ -2658,8 +2562,6 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
     render();
   }
 
-  app.addEventListener('input', e => { if (e.target.id === 'reqNote') R.reqNote = e.target.value; });
-
   // Botón de contacto: mensaje listo, con el nombre de la familia si entró con su enlace
   function setContactLink(name){
     const msg = name
@@ -2690,10 +2592,6 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
       case 'unpick': R.sel = R.sel.filter(k => k !== b.dataset.k); render(); break;
       case 'submit': submit(R.count); break;
       case 'decline': submit(0); break;
-      case 'reqOpen':   R.reqOpen = true; render(); document.getElementById('reqNote')?.scrollIntoView({ behavior:'smooth', block:'center' }); break;
-      case 'reqCancel': R.reqOpen = false; render(); break;
-      case 'reqExtra':  R.reqExtra = Math.min(Math.max(R.reqExtra + Number(b.dataset.d), 1), 5); render(); break;
-      case 'reqSend':   sendRequest(); break;
       case 'edit':
         R.going = R.inv.status === 'confirmed' ? true : null;
         R.count = Math.max(R.inv.attending, 1);

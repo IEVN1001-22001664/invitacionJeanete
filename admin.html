@@ -100,16 +100,6 @@ textarea{ width:100%; min-height:120px; margin-top:10px; padding:10px; border-ra
 .code{ font-family:ui-monospace, monospace; font-size:14px; background:#fff; padding:2px 6px; border-radius:6px; }
 .empty{ text-align:center; color:var(--muted); font-style:italic; padding:20px; }
 
-.requests{ margin-bottom:22px; }
-.requests.has-pending{ box-shadow:0 0 0 2px #d9822b, 0 14px 30px -22px rgba(74,10,21,.5); }
-.pill{ display:inline-block; min-width:22px; padding:2px 8px; border-radius:999px; background:#d9822b; color:#fff; font-size:11px; letter-spacing:0; text-align:center; vertical-align:2px; }
-.pill:empty{ display:none; }
-.req{ padding:14px; border-radius:12px; background:#fbf6ec; box-shadow:inset 0 0 0 1px rgba(201,164,92,.35); }
-.req.done{ opacity:.6; }
-.req-note{ margin-top:6px; font-style:italic; color:var(--ink); }
-.badge.approved{ background:#d8efe0; color:#1d6b3f; }
-.badge.rejected{ background:#f3d9d9; color:#9b2c2c; }
-
 .toast{
   position:fixed; left:50%; bottom:24px; transform:translate(-50%, 20px); opacity:0;
   padding:12px 20px; border-radius:999px; background:rgba(74,10,21,.95); color:#fbf3e3;
@@ -152,11 +142,6 @@ textarea{ width:100%; min-height:120px; margin-top:10px; padding:10px; border-ra
   </div>
 
   <div class="stats" id="stats"></div>
-
-  <section class="card requests" id="requests" hidden>
-    <h2>Solicitudes de lugares adicionales <span class="pill" id="reqCount"></span></h2>
-    <div class="list" id="reqList"></div>
-  </section>
 
   <div class="grid">
     <section class="card">
@@ -283,33 +268,8 @@ textarea{ width:100%; min-height:120px; margin-top:10px; padding:10px; border-ra
     $('hall').innerHTML = `<div class="hall-head">Mesa presidencial · aparte de los 100 lugares</div>` + order.map(tableHtml).join('');
 
     renderList();
-    renderRequests();
   }
 
-  function renderRequests(){
-    const reqs = data.requests || [];
-    const pending = reqs.filter(r => r.status === 'pending');
-    $('requests').hidden = !reqs.length;
-    $('requests').classList.toggle('has-pending', pending.length > 0);
-    $('reqCount').textContent = pending.length || '';
-    document.title = (pending.length ? `(${pending.length}) ` : '') + 'Panel de invitados · Manuel & Jeanette';
-    const when = d => new Date(d).toLocaleString('es-MX', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
-    $('reqList').innerHTML = reqs.map(r => `
-      <div class="req${r.status === 'pending' ? '' : ' done'}" data-id="${r.id}">
-        <div class="inv-top">
-          <div>
-            <div class="inv-name">${esc(r.name)} pide <b>+${r.extra}</b> ${r.extra === 1 ? 'lugar' : 'lugares'}</div>
-            <div class="inv-meta">Tiene ${r.max} ${r.max === 1 ? 'lugar' : 'lugares'} · <span class="code">${r.code}</span> · ${when(r.created_at)}</div>
-            ${r.note ? `<div class="req-note">“${esc(r.note)}”</div>` : ''}
-          </div>
-          <span class="badge ${r.status}">${{ pending:'Pendiente', approved:'Aprobada', rejected:'Rechazada' }[r.status]}</span>
-        </div>
-        ${r.status === 'pending' ? `<div class="inv-actions">
-          <button class="btn small" data-act="approve">Aprobar (+${r.extra})</button>
-          <button class="btn small ghost" data-act="reject">Rechazar</button>
-        </div>` : ''}
-      </div>`).join('');
-  }
 
   function renderList(){
     const q = $('search').value.trim().toLowerCase();
@@ -427,17 +387,6 @@ Manuel & Jeanette`;
       if (confirm(`Mesa ${t}, asiento ${s} es de "${seat.who}". ¿Quitárselo y dejarlo libre?`))
         await act('admin_release_seat', { p_table:t, p_seat:s }, 'Asiento liberado');
     }
-  });
-
-  $('reqList').addEventListener('click', async e => {
-    const b = e.target.closest('[data-act]'); if (!b) return;
-    const r = data.requests.find(x => String(x.id) === b.closest('.req').dataset.id);
-    const approve = b.dataset.act === 'approve';
-    const total = Math.min(r.max + r.extra, 10);
-    const ask = approve
-      ? `¿Aprobar? "${r.name}" pasará de ${r.max} a ${total} lugares.`
-      : `¿Rechazar la solicitud de "${r.name}"?`;
-    if (confirm(ask)) await act('admin_resolve_request', { p_id:r.id, p_approve:approve }, approve ? 'Solicitud aprobada' : 'Solicitud rechazada');
   });
 
   // Revisa nuevas solicitudes cada minuto mientras el panel está abierto
