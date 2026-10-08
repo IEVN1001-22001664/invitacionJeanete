@@ -690,11 +690,12 @@ body.locked{ overflow:hidden; height:100dvh; }
 .bc-holder span{ font-family:var(--caps); font-size:13px; letter-spacing:.12em; }
 
 .toast{
-  position:fixed; left:50%; bottom:28px; z-index:60;
+  position:fixed; left:50%; bottom:28px; z-index:90;
   transform:translate(-50%, 20px); opacity:0;
-  padding:12px 22px; border-radius:999px;
+  padding:12px 22px; border-radius:22px;
   background:rgba(74,10,21,.95); color:#fbf3e3;
-  font-family:var(--serif); font-size:16px; white-space:nowrap;
+  font-family:var(--serif); font-size:16px; line-height:1.35; text-align:center;
+  width:max-content; max-width:calc(var(--app-w) - 40px);
   box-shadow:0 10px 24px -8px rgba(0,0,0,.5), 0 0 0 1px rgba(201,164,92,.5);
   transition:opacity .35s ease, transform .35s ease;
   pointer-events:none;
@@ -896,6 +897,230 @@ body.locked{ overflow:hidden; height:100dvh; }
 }
 .notice p b{ color:#a8823e; font-weight:400; margin-right:6px; }
 
+/* =========================================================
+   CONFIRMACIÓN DE ASISTENCIA (RSVP) + MAPA DE MESAS
+   ========================================================= */
+.rsvp{
+  position:relative;
+  background:var(--paper);
+  padding:20px 16px 120px;
+  text-align:center;
+  color:var(--wax-dark);
+  overflow:hidden;
+  font-variant-numeric:lining-nums;
+}
+.rsvp > *:not(.speckles){ position:relative; z-index:2; }
+.rsvp-deadline{
+  font-family:var(--serif); font-style:italic; font-size:17px; color:#7d6448; margin-top:8px;
+}
+.rsvp-card{
+  position:relative;
+  margin:30px auto 0; max-width:400px;
+  padding:30px 20px 28px;
+  border-radius:20px;
+  background:linear-gradient(180deg, rgba(255,253,248,.95), rgba(246,236,218,.8));
+  box-shadow:0 0 0 1px rgba(201,164,92,.55), 0 22px 40px -24px rgba(74,10,21,.5);
+}
+.rsvp-card::before{
+  content:''; position:absolute; top:-7px; left:50%; width:13px; height:13px;
+  background:var(--gold); transform:translateX(-50%) rotate(45deg); box-shadow:0 0 0 4px var(--paper);
+}
+.r-for{ font-family:var(--caps); font-size:11px; letter-spacing:.4em; padding-left:.4em; color:#9a7f55; }
+.r-name{
+  font-family:var(--script); font-size:clamp(36px, 11vw, 46px); line-height:1.05; color:var(--wax-dark);
+  margin:6px 0 4px; word-break:break-word;
+}
+.r-seats{ font-family:var(--serif); font-size:18px; color:var(--ink); }
+.r-seats b{ font-weight:600; color:#8a1a2c; }
+.r-text{ font-family:var(--serif); font-size:18px; line-height:1.5; color:var(--ink); margin-top:14px; }
+.r-q{ font-family:var(--caps); font-size:12px; letter-spacing:.24em; color:#8a1a2c; margin-top:22px; }
+
+.r-choices{ display:grid; gap:10px; margin-top:14px; }
+.r-choice{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  padding:15px 18px; border-radius:14px; cursor:pointer;
+  font-family:var(--serif); font-size:19px; color:var(--wax-dark);
+  background:#fffdf8; border:1px solid rgba(201,164,92,.6);
+  transition:transform .2s ease, background .25s ease, color .25s ease, box-shadow .25s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.r-choice svg{ width:20px; height:20px; flex:none; }
+.r-choice:hover{ transform:translateY(-1px); box-shadow:0 8px 16px -10px rgba(74,10,21,.4); }
+.r-choice.on{
+  background:linear-gradient(160deg, #8a1a2c, #5e0f1c); color:#fbf3e3; border-color:transparent;
+  box-shadow:0 10px 20px -10px rgba(74,10,21,.8), 0 0 0 1px rgba(201,164,92,.6);
+}
+
+.stepper{ display:inline-flex; align-items:center; gap:18px; margin-top:12px; }
+.stepper button{
+  width:46px; height:46px; border-radius:50%; cursor:pointer;
+  border:1px solid rgba(201,164,92,.8); background:#fffdf8; color:#8a1a2c;
+  font-size:24px; line-height:1; display:grid; place-items:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.stepper button:disabled{ opacity:.35; cursor:default; }
+.stepper output{
+  min-width:56px; font-family:var(--serif); font-weight:600; font-size:40px; color:var(--wax-dark);
+  font-variant-numeric:lining-nums;
+}
+.r-hint{ font-family:var(--serif); font-style:italic; font-size:15px; color:#9a7f55; margin-top:4px; }
+
+.r-actions{ display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:24px; }
+.r-link{
+  background:none; border:0; cursor:pointer; padding:6px;
+  font-family:var(--serif); font-style:italic; font-size:16px; color:#8a1a2c; text-decoration:underline;
+  text-underline-offset:3px;
+}
+.g-btn:disabled{ opacity:.45; cursor:default; transform:none; }
+.g-btn:disabled::after{ animation:none; }
+
+/* --- Mapa general de mesas --- */
+.hall{ margin:26px auto 0; max-width:420px; }
+.hall-head{
+  margin:0 auto 18px; width:72%; padding:12px 10px;
+  border-radius:8px;
+  background:linear-gradient(180deg, #f3e6cc, #e9d6b0);
+  box-shadow:0 0 0 1px rgba(168,130,62,.6), 0 8px 16px -10px rgba(74,10,21,.4);
+  font-family:var(--caps); font-size:11px; letter-spacing:.28em; color:#7d5f27;
+}
+.hall-head small{ display:block; margin-top:3px; font-family:var(--serif); font-style:italic; font-size:13px; letter-spacing:0; color:#9a7f55; }
+.hall-wings{ display:grid; grid-template-columns:1fr 18px 1fr; gap:6px; }
+.hall-col{ display:grid; gap:12px; }
+.hall-aisle{
+  writing-mode:vertical-rl; transform:rotate(180deg);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--caps); font-size:10px; letter-spacing:.5em; color:rgba(138,26,44,.45);
+  border-left:1px dashed rgba(201,164,92,.5); border-right:1px dashed rgba(201,164,92,.5);
+}
+.hall-foot{ margin-top:16px; font-family:var(--caps); font-size:10px; letter-spacing:.5em; color:#9a7f55; }
+
+.tbl{
+  position:relative; display:block; width:100%;
+  padding:6px 4px 8px; border-radius:12px; cursor:pointer;
+  background:transparent; border:1px solid transparent;
+  transition:background .25s ease, border-color .25s ease, transform .2s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.tbl:hover, .tbl:focus-visible{ background:rgba(201,164,92,.1); border-color:rgba(201,164,92,.5); outline:none; }
+.tbl:active{ transform:scale(.97); }
+.tbl.has-mine{ background:rgba(138,26,44,.06); border-color:rgba(138,26,44,.35); }
+.tbl.full{ cursor:pointer; opacity:.75; }
+.tbl-meta{ display:block; margin-top:4px; font-family:var(--serif); font-size:13px; color:#7d6448; }
+.tbl-meta b{ color:#8a1a2c; font-weight:600; }
+
+/* Mesa (sirve tanto en miniatura como en grande) */
+.table-fig{ position:relative; width:100%; aspect-ratio:12/7; }
+.table-top{
+  position:absolute; left:17%; right:17%; top:25%; bottom:25%;
+  border-radius:6px;
+  background:linear-gradient(180deg, #ecd9b4, #dcc196);
+  box-shadow:inset 0 0 0 1px rgba(125,95,39,.45), 0 4px 8px -4px rgba(74,10,21,.4);
+  display:grid; place-items:center;
+  font-family:var(--caps); font-weight:500; color:#5e4520;
+}
+.seat{
+  position:absolute; transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:#fffdf8; border:1.5px solid #b8975a;
+  display:grid; place-items:center;
+  font-family:var(--serif); font-weight:600; color:#7d5f27;
+  font-variant-numeric:lining-nums;
+  transition:background .2s ease, border-color .2s ease, transform .2s ease, color .2s ease;
+}
+.seat.taken{ background:#c9b8b0; border-color:#a8968d; color:transparent; }
+.seat.taken::after{ content:''; width:45%; height:1.5px; background:#fffdf8; transform:rotate(45deg); position:absolute; }
+.seat.taken::before{ content:''; width:45%; height:1.5px; background:#fffdf8; transform:rotate(-45deg); position:absolute; }
+.seat.sel{ background:linear-gradient(160deg, #a8283d, #6e1222); border-color:#5e0f1c; color:#fbf3e3; }
+
+.table-fig.mini .table-top{ font-size:9px; letter-spacing:.12em; }
+.table-fig.mini .seat{ width:13%; aspect-ratio:1; border-width:1.2px; font-size:0; }
+
+.table-fig.big .table-top{ font-size:15px; letter-spacing:.2em; }
+.table-fig.big .seat{ width:15%; aspect-ratio:1; font-size:15px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.table-fig.big .seat:not(.taken):hover{ transform:translate(-50%,-50%) scale(1.08); }
+.table-fig.big .seat.sel{ animation:seatPop .35s cubic-bezier(.3,1.6,.5,1); }
+.table-fig.big .seat.taken{ cursor:not-allowed; }
+
+.legend{ display:flex; justify-content:center; flex-wrap:wrap; gap:14px; margin-top:16px; font-family:var(--serif); font-size:14px; color:#7d6448; }
+.legend span{ display:inline-flex; align-items:center; gap:6px; }
+.legend i{ position:relative; width:14px; height:14px; border-radius:50%; background:#fffdf8; border:1.5px solid #b8975a; }
+.legend i.taken{ background:#c9b8b0; border-color:#a8968d; }
+.legend i.sel{ background:#8a1a2c; border-color:#5e0f1c; }
+
+.pick-count{
+  position:sticky; top:10px; z-index:5;
+  display:inline-flex; align-items:center; gap:10px;
+  margin-top:20px; padding:9px 18px; border-radius:999px;
+  background:rgba(255,253,248,.95);
+  box-shadow:0 0 0 1px rgba(201,164,92,.6), 0 8px 18px -10px rgba(74,10,21,.4);
+  font-family:var(--serif); font-size:17px; color:var(--ink);
+}
+.pick-count b{ color:#8a1a2c; font-variant-numeric:lining-nums; }
+.pick-count.done{ background:linear-gradient(160deg, #8a1a2c, #5e0f1c); color:#fbf3e3; box-shadow:0 0 0 1px rgba(201,164,92,.7); }
+.pick-count.done b{ color:var(--gold-light); }
+
+.chips{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:14px; }
+.chip{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 8px 6px 12px; border-radius:999px;
+  background:#fffdf8; border:1px solid rgba(138,26,44,.35);
+  font-family:var(--serif); font-size:15px; color:var(--wax-dark);
+  font-variant-numeric:lining-nums;
+}
+.chip button{
+  width:22px; height:22px; border-radius:50%; border:0; cursor:pointer;
+  background:rgba(138,26,44,.1); color:#8a1a2c; font-size:14px; line-height:1;
+}
+.chip.static{ padding-right:12px; }
+
+/* --- Hoja inferior con la mesa en grande --- */
+.sheet-backdrop{
+  position:fixed; inset:0; z-index:65; background:rgba(20,8,11,.55);
+  opacity:0; visibility:hidden; transition:opacity .3s ease, visibility 0s linear .3s;
+}
+.sheet{
+  position:fixed; left:50%; bottom:0; z-index:66;
+  width:var(--app-w); max-height:92dvh; overflow:auto;
+  transform:translate(-50%, 105%);
+  transition:transform .45s cubic-bezier(.2,.8,.2,1);
+  background:var(--paper);
+  border-radius:24px 24px 0 0;
+  box-shadow:0 -20px 40px -10px rgba(0,0,0,.45);
+  padding:12px 18px max(22px, env(safe-area-inset-bottom));
+  text-align:center; color:var(--wax-dark);
+}
+.sheet.open{ transform:translate(-50%, 0); }
+.sheet.open + .sheet-backdrop, .sheet-backdrop.open{ opacity:1; visibility:visible; transition:opacity .3s ease; }
+.sheet-grip{ width:44px; height:5px; border-radius:3px; background:rgba(138,26,44,.2); margin:0 auto 12px; }
+.sheet h3{ font-family:var(--script); font-weight:400; font-size:44px; line-height:1; }
+.sheet .r-hint{ margin-top:6px; }
+.sheet .table-fig{ max-width:360px; margin:22px auto 0; }
+.sheet-nav{ display:flex; justify-content:space-between; align-items:center; margin-top:18px; }
+.sheet-nav button{
+  border:0; background:none; cursor:pointer; padding:8px;
+  font-family:var(--caps); font-size:11px; letter-spacing:.2em; color:#8a1a2c;
+}
+.sheet-nav button:disabled{ opacity:.3; cursor:default; }
+
+/* --- Confirmación lista --- */
+.r-done-icon{
+  width:74px; height:74px; margin:0 auto 10px; border-radius:50%;
+  display:grid; place-items:center;
+  background:radial-gradient(circle at 35% 30%, #a8283d, #6e1222);
+  box-shadow:0 0 0 1px rgba(201,164,92,.7), 0 0 0 6px #fffdf8, 0 0 0 7px rgba(201,164,92,.4);
+  animation:seatPop .6s cubic-bezier(.3,1.6,.5,1);
+}
+.r-done-icon svg{ width:34px; height:34px; }
+.confetti{ position:fixed; z-index:80; pointer-events:none; font-size:18px; animation:confetti 1.6s cubic-bezier(.2,.7,.3,1) forwards; }
+
+.r-loading{ display:flex; justify-content:center; gap:8px; padding:30px 0; }
+.r-loading i{ width:9px; height:9px; border-radius:50%; background:#8a1a2c; animation:dots 1s ease-in-out infinite; }
+.r-loading i:nth-child(2){ animation-delay:.15s; } .r-loading i:nth-child(3){ animation-delay:.3s; }
+
+/* Sobre personalizado */
+.env-label--bottom .env-guest{ display:block; margin-top:6px; font-family:var(--script); font-style:normal; font-size:32px; line-height:1.1; letter-spacing:0; color:var(--wax-dark); padding:0 20px; }
+.env-label--bottom .env-guest-for{ display:block; font-family:var(--caps); font-style:normal; font-size:10px; letter-spacing:.4em; padding-left:.4em; color:#9a7f55; }
+
 /* Aparición al hacer scroll */
 .reveal{ opacity:0; transform:translateY(26px); transition:opacity 1.1s ease var(--d, 0s), transform 1.1s cubic-bezier(.2,.7,.2,1) var(--d, 0s); }
 .reveal.in{ opacity:1; transform:none; }
@@ -925,6 +1150,14 @@ body.locked{ overflow:hidden; height:100dvh; }
 @keyframes shine{ 0%{ left:-60%; } 55%,100%{ left:130%; } }
 @keyframes cardGleam{ 0%{ transform:translateX(-40%); } 60%,100%{ transform:translateX(40%); } }
 @keyframes beat{ 0%,100%{ transform:scale(1); } 20%{ transform:scale(1.25); } 40%{ transform:scale(.95); } 60%{ transform:scale(1.15); } }
+@keyframes seatPop{ 0%{ transform:translate(-50%,-50%) scale(.6); } 100%{ transform:translate(-50%,-50%) scale(1); } }
+.r-done-icon{ animation-name:donePop; }
+@keyframes donePop{ 0%{ transform:scale(.4); } 100%{ transform:scale(1); } }
+@keyframes confetti{
+  0%  { transform:translate(0,0) rotate(0); opacity:1; }
+  100%{ transform:translate(var(--cx), var(--cy)) rotate(var(--cr)); opacity:0; }
+}
+@keyframes dots{ 0%,100%{ transform:translateY(0); opacity:.4; } 50%{ transform:translateY(-6px); opacity:1; } }
 @keyframes tick{ from{ transform:translateY(-60%); opacity:0; } to{ transform:none; opacity:1; } }
 @keyframes burst{
   0%  { transform:translate(-50%,-50%) scale(1); opacity:1; }
@@ -977,7 +1210,7 @@ body.locked{ overflow:hidden; height:100dvh; }
     Toca para abrir
   </div>
 
-  <div class="env-label env-label--bottom">
+  <div class="env-label env-label--bottom" id="envBottom">
     <span>07 · Noviembre · 2026</span>
   </div>
 </div>
@@ -1330,7 +1563,37 @@ body.locked{ overflow:hidden; height:100dvh; }
       <p><b>❖</b>Aunque apreciamos a sus pequeños, hemos decidido celebrar este momento sin niños.</p>
     </aside>
   </section>
+
+  <!-- ===================== CONFIRMACIÓN DE ASISTENCIA ===================== -->
+  <section class="rsvp" id="confirmar">
+    <canvas class="speckles" aria-hidden="true"></canvas>
+
+    <p class="w-kicker reveal">Confirma tu</p>
+    <h2 class="w-title reveal" style="--d:.15s">Asistencia</h2>
+    <p class="rsvp-deadline reveal" style="--d:.3s">Por favor confirma antes del 15 de octubre</p>
+
+    <div id="rsvpApp" aria-live="polite">
+      <div class="r-loading" aria-label="Cargando"><i></i><i></i><i></i></div>
+    </div>
+  </section>
 </main>
+
+<!-- Mesa en grande para elegir asientos -->
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet-grip" aria-hidden="true"></div>
+  <h3 id="sheetTitle">Mesa</h3>
+  <p class="r-hint" id="sheetHint"></p>
+  <div id="sheetTable"></div>
+  <div class="legend" aria-hidden="true">
+    <span><i></i>Disponible</span><span><i class="sel"></i>Tu elección</span><span><i class="taken"></i>Ocupado</span>
+  </div>
+  <div class="sheet-nav">
+    <button type="button" id="sheetPrev">‹ Anterior</button>
+    <button class="g-btn" type="button" id="sheetDone" style="margin-top:0">Listo</button>
+    <button type="button" id="sheetNext">Siguiente ›</button>
+  </div>
+</div>
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
 
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Galería de fotos">
   <img class="lb-img" id="lbImg" alt="">
@@ -1704,6 +1967,364 @@ body.locked{ overflow:hidden; height:100dvh; }
     bankCard.style.setProperty('--ry', '0deg');
     bankCard.style.setProperty('--rx', '0deg');
   });
+
+  /* =========================================================
+     CONFIRMACIÓN DE ASISTENCIA
+     ========================================================= */
+  const SUPABASE_URL = 'https://idoecqvqcnpjuwtiaigr.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_dhnyncLr805d9jzgPP0PXw_CxzY21kE'; // llave pública: solo puede llamar a las funciones permitidas
+
+  async function rpc(fn, args){
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+      method:'POST',
+      headers:{ apikey:SUPABASE_KEY, 'Content-Type':'application/json' },
+      body:JSON.stringify(args)
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok){
+      const err = new Error((data && data.message) || 'NETWORK');
+      err.details = data && data.details;
+      throw err;
+    }
+    return data;
+  }
+
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  const key = (t, s) => t + '-' + s;
+  const plural = (n, one, many) => n === 1 ? one : many;
+
+  // Posición de las 10 sillas alrededor de la mesa (x%, y%), en sentido horario
+  const SEAT_POS = [[26.7,11],[43.3,11],[60,11],[76.7,11],[92,50],[76.7,89],[60,89],[43.3,89],[26.7,89],[8,50]];
+
+  const ERRORS = {
+    INVALID_CODE:        'No encontramos esta invitación. Revisa el enlace que te enviamos.',
+    DEADLINE_PASSED:     'La fecha para confirmar ya pasó. Si necesitas ayuda, escríbenos.',
+    SEAT_TAKEN:          'Uno de tus asientos acaba de ser ocupado por alguien más. Elige otro, por favor.',
+    SEAT_COUNT_MISMATCH: 'El número de asientos no coincide con las personas que asistirán.',
+    INVALID_COUNT:       'El número de personas no es válido para esta invitación.',
+    NETWORK:             'No pudimos conectarnos. Revisa tu internet e intenta de nuevo.'
+  };
+  const errMsg = e => ERRORS[e.message] || 'Ocurrió un error. Intenta de nuevo en un momento.';
+
+  const app = document.getElementById('rsvpApp');
+  const R = {
+    code: (new URLSearchParams(location.search).get('i') || '').trim().toUpperCase(),
+    inv: null,          // datos de la invitación
+    map: new Map(),     // 'mesa-asiento' -> free | taken | mine
+    step: 'loading',
+    going: null,
+    count: 1,
+    sel: [],            // asientos elegidos ('mesa-asiento'), en orden
+    busy: false,
+    sheetT: null,
+    poll: null
+  };
+
+  function seatState(t, s){
+    const k = key(t, s);
+    if (R.sel.includes(k)) return 'sel';
+    return R.map.get(k) === 'taken' ? 'taken' : 'free';
+  }
+
+  function tableFig(t, size){
+    const seats = SEAT_POS.map(([x, y], i) => {
+      const s = i + 1, st = seatState(t, s);
+      const style = `left:${x}%;top:${y}%`;
+      if (size === 'mini') return `<span class="seat ${st}" style="${style}"></span>`;
+      const label = st === 'taken' ? 'ocupado' : st === 'sel' ? 'elegido' : 'disponible';
+      return `<button type="button" class="seat ${st}" style="${style}" data-seat="${s}" aria-label="Asiento ${s}, ${label}" aria-pressed="${st === 'sel'}" ${st === 'taken' ? 'disabled' : ''}>${s}</button>`;
+    }).join('');
+    return `<div class="table-fig ${size}"><div class="table-top">Mesa ${t}</div>${seats}</div>`;
+  }
+
+  function tableButton(t){
+    let free = 0, mine = 0;
+    for (let s = 1; s <= 10; s++){
+      const st = seatState(t, s);
+      if (st === 'free') free++;
+      if (st === 'sel') mine++;
+    }
+    const meta = mine
+      ? `<b>${mine} ${plural(mine, 'tuyo', 'tuyos')}</b> · ${free} ${plural(free, 'libre', 'libres')}`
+      : free ? `${free} ${plural(free, 'libre', 'libres')}` : 'Completa';
+    return `<button type="button" class="tbl${mine ? ' has-mine' : ''}${free || mine ? '' : ' full'}" data-act="table" data-t="${t}" aria-label="Mesa ${t}, ${free} lugares libres">
+      ${tableFig(t, 'mini')}<span class="tbl-meta">${meta}</span></button>`;
+  }
+
+  function hall(){
+    const col = list => `<div class="hall-col">${list.map(tableButton).join('')}</div>`;
+    return `<div class="hall">
+      <div class="hall-head">Mesa presidencial<small>Novios y familia</small></div>
+      <div class="hall-wings">${col([1,3,5,7,9])}<div class="hall-aisle" aria-hidden="true">Pasillo</div>${col([2,4,6,8,10])}</div>
+      <div class="hall-foot">Entrada</div>
+    </div>`;
+  }
+
+  function seatChips(list, removable){
+    return `<div class="chips">${list.map(k => {
+      const [t, s] = k.split('-');
+      return removable
+        ? `<span class="chip">Mesa ${t} · Silla ${s}<button type="button" data-act="unpick" data-k="${k}" aria-label="Quitar mesa ${t} silla ${s}">✕</button></span>`
+        : `<span class="chip static">Mesa ${t} · Silla ${s}</span>`;
+    }).join('')}</div>`;
+  }
+
+  const heartIcon = '<svg viewBox="0 0 24 24" fill="#fbf3e3" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.2-9.3C1.6 7.8 3.9 4.5 7.3 4.5c2 0 3.6 1.1 4.7 2.7 1.1-1.6 2.7-2.7 4.7-2.7 3.4 0 5.7 3.3 4.5 6.7C19.5 15.9 12 20.5 12 20.5z"/></svg>';
+  const header = () => `<p class="r-for">Invitación para</p><p class="r-name">${esc(R.inv.name)}</p>`;
+
+  function view(){
+    const inv = R.inv;
+    switch (R.step){
+      case 'loading':
+        return '<div class="r-loading" aria-label="Cargando"><i></i><i></i><i></i></div>';
+
+      case 'nocode':
+        return `<div class="rsvp-card"><p class="r-text">Para confirmar tu asistencia y elegir tus lugares, abre el <b>enlace personal</b> que te enviamos por WhatsApp.</p>
+          <p class="r-hint" style="margin-top:12px">¿No lo encuentras? Escríbenos y con gusto te lo reenviamos.</p></div>`;
+
+      case 'invalid':
+        return `<div class="rsvp-card"><p class="r-text">${ERRORS.INVALID_CODE}</p>
+          <p class="r-hint" style="margin-top:12px">Si el problema continúa, escríbenos y te ayudamos.</p></div>`;
+
+      case 'error':
+        return `<div class="rsvp-card"><p class="r-text">${ERRORS.NETWORK}</p>
+          <div class="r-actions"><button class="g-btn" type="button" data-act="retry">Intentar de nuevo</button></div></div>`;
+
+      case 'closed':
+        return `<div class="rsvp-card">${header()}<p class="r-text">El periodo para confirmar terminó el 15 de octubre.<br>Si necesitas ayuda, escríbenos.</p></div>`;
+
+      case 'ask': {
+        const max = inv.max;
+        return `<div class="rsvp-card">
+          ${header()}
+          <p class="r-seats">Hemos reservado <b>${max}</b> ${plural(max, 'lugar', 'lugares')} en su honor</p>
+          <p class="r-q">¿Nos acompañarán?</p>
+          <div class="r-choices">
+            <button type="button" class="r-choice${R.going === true ? ' on' : ''}" data-act="going" data-v="1">${heartIcon.replace('#fbf3e3', 'currentColor')} Sí, ahí estaremos</button>
+            <button type="button" class="r-choice${R.going === false ? ' on' : ''}" data-act="going" data-v="0">No podremos asistir</button>
+          </div>
+          ${R.going === true ? `
+            ${max > 1 ? `<p class="r-q">¿Cuántas personas asistirán?</p>
+            <div class="stepper">
+              <button type="button" data-act="count" data-d="-1" aria-label="Una persona menos" ${R.count <= 1 ? 'disabled' : ''}>−</button>
+              <output aria-live="polite">${R.count}</output>
+              <button type="button" data-act="count" data-d="1" aria-label="Una persona más" ${R.count >= max ? 'disabled' : ''}>+</button>
+            </div>
+            <p class="r-hint">Máximo ${max} ${plural(max, 'persona', 'personas')}</p>` : ''}
+            <div class="r-actions"><button class="g-btn" type="button" data-act="toSeats">Elegir ${plural(R.count, 'mi asiento', 'nuestros asientos')}</button></div>` : ''}
+          ${R.going === false ? `
+            <p class="r-text">Lamentamos que no puedan acompañarnos. ¿Confirmas que no asistirán?</p>
+            <div class="r-actions"><button class="g-btn" type="button" data-act="decline" ${R.busy ? 'disabled' : ''}>${R.busy ? 'Enviando…' : 'Confirmar'}</button></div>` : ''}
+        </div>`;
+      }
+
+      case 'seats': {
+        const done = R.sel.length === R.count;
+        return `<div class="rsvp-card">
+          ${header()}
+          <p class="r-seats">Elige ${R.count === 1 ? '<b>1</b> asiento' : `<b>${R.count}</b> asientos`}: toca una mesa para verla de cerca</p>
+          <div class="pick-count${done ? ' done' : ''}">Elegidos <b>${R.sel.length}</b> de <b>${R.count}</b></div>
+          ${hall()}
+          <div class="legend" aria-hidden="true"><span><i></i>Disponible</span><span><i class="sel"></i>Tu elección</span><span><i class="taken"></i>Ocupado</span></div>
+          ${R.sel.length ? seatChips(R.sel, true) : ''}
+          <div class="r-actions">
+            <button class="g-btn" type="button" data-act="submit" ${done && !R.busy ? '' : 'disabled'}>${R.busy ? 'Confirmando…' : 'Confirmar asistencia'}</button>
+            <button class="r-link" type="button" data-act="back">Cambiar número de personas</button>
+          </div>
+        </div>`;
+      }
+
+      case 'done': {
+        const seats = inv.seats.map(x => key(x.t, x.s));
+        const body = inv.status === 'declined'
+          ? `<p class="r-text">Gracias por avisarnos. Lamentamos que no puedan acompañarnos, ¡los llevaremos en el corazón!</p>`
+          : `<p class="r-seats">Asistencia confirmada para <b>${inv.attending}</b> ${plural(inv.attending, 'persona', 'personas')}</p>
+             ${seatChips(seats, false)}
+             <p class="r-text">Los esperamos el sábado 7 de noviembre. ¡Gracias por acompañarnos!</p>`;
+        return `<div class="rsvp-card">
+          <div class="r-done-icon">${heartIcon}</div>
+          <p class="r-name">${inv.status === 'declined' ? esc(inv.name) : '¡Gracias!'}</p>
+          ${inv.status === 'declined' ? '' : `<p class="r-for">${esc(inv.name)}</p>`}
+          ${body}
+          ${inv.open ? `<div class="r-actions"><button class="r-link" type="button" data-act="edit">Modificar mi confirmación</button>
+            <p class="r-hint">Puedes hacer cambios hasta el 15 de octubre</p></div>` : ''}
+        </div>`;
+      }
+    }
+    return '';
+  }
+
+  function render(){
+    app.innerHTML = view();
+    if (R.sheetT) renderSheet();
+    if (R.step === 'seats') startPolling(); else stopPolling();
+  }
+
+  async function refreshMap(){
+    const rows = await rpc('get_seat_map', { p_code:R.code });
+    R.map = new Map(rows.map(([t, s, st]) => [key(t, s), st]));
+    // si alguien más ocupó uno de mis asientos elegidos, se quita de mi selección
+    const lost = R.sel.filter(k => R.map.get(k) === 'taken');
+    if (lost.length){
+      R.sel = R.sel.filter(k => !lost.includes(k));
+      const [t, s] = lost[0].split('-');
+      showToast(`La silla ${s} de la mesa ${t} acaba de ocuparse`);
+    }
+  }
+
+  function startPolling(){
+    if (R.poll) return;
+    R.poll = setInterval(async () => {
+      if (document.hidden || R.busy) return;
+      try { await refreshMap(); render(); } catch {}
+    }, 8000);
+  }
+  function stopPolling(){ clearInterval(R.poll); R.poll = null; }
+
+  async function loadInvitation(){
+    if (!R.code){ R.step = 'nocode'; render(); return; }
+    R.step = 'loading'; render();
+    try {
+      const [inv] = await Promise.all([ rpc('get_invitation', { p_code:R.code }), refreshMap() ]);
+      R.inv = inv;
+      personalizeEnvelope(inv.name);
+      if (inv.status !== 'pending') R.step = 'done';
+      else R.step = inv.open ? 'ask' : 'closed';
+    } catch (e){
+      R.step = e.message === 'INVALID_CODE' ? 'invalid' : 'error';
+    }
+    render();
+  }
+
+  function personalizeEnvelope(name){
+    const el = document.getElementById('envBottom');
+    if (el) el.innerHTML = `<span class="env-guest-for">Invitación para</span><span class="env-guest">${esc(name)}</span>`;
+  }
+
+  async function submit(attending){
+    if (R.busy) return;
+    R.busy = true; render();
+    try {
+      const seats = attending ? R.sel.map(k => { const [t, s] = k.split('-').map(Number); return { t, s }; }) : [];
+      R.inv = await rpc('submit_rsvp', { p_code:R.code, p_attending:attending, p_seats:seats });
+      R.busy = false;
+      R.step = 'done';
+      await refreshMap().catch(() => {});
+      render();
+      document.getElementById('confirmar').scrollIntoView({ behavior:'smooth', block:'start' });
+      if (attending) celebrate();
+    } catch (e){
+      R.busy = false;
+      if (e.message === 'SEAT_TAKEN'){
+        try {
+          JSON.parse(e.details || '[]').forEach(x => { R.sel = R.sel.filter(k => k !== key(x.t, x.s)); });
+        } catch {}
+        await refreshMap().catch(() => {});
+      }
+      if (e.message === 'DEADLINE_PASSED'){ R.step = 'closed'; }
+      render();
+      showToast(errMsg(e));
+    }
+  }
+
+  function celebrate(){
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const icons = ['❤', '✦', '❤', '✧'];
+    for (let i = 0; i < 28; i++){
+      const c = document.createElement('span');
+      c.className = 'confetti';
+      c.textContent = icons[i % icons.length];
+      c.style.left = (innerWidth / 2) + 'px';
+      c.style.top = (innerHeight * .45) + 'px';
+      c.style.color = i % 3 ? '#8a1a2c' : '#c9a45c';
+      const a = Math.random() * Math.PI * 2, d = 90 + Math.random() * 160;
+      c.style.setProperty('--cx', Math.cos(a) * d + 'px');
+      c.style.setProperty('--cy', Math.sin(a) * d + 120 + 'px');
+      c.style.setProperty('--cr', (Math.random() * 720 - 360) + 'deg');
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 1700);
+    }
+  }
+
+  function togglePick(t, s){
+    const k = key(t, s);
+    if (R.sel.includes(k)){ R.sel = R.sel.filter(x => x !== k); }
+    else if (seatState(t, s) === 'taken'){ return; }
+    else if (R.sel.length >= R.count){
+      showToast(R.count === 1 ? 'Ya elegiste tu asiento. Tócalo para quitarlo.' : `Ya elegiste tus ${R.count} asientos. Toca uno para quitarlo.`);
+      return;
+    }
+    else { R.sel.push(k); if (navigator.vibrate) navigator.vibrate(8); }
+    render();
+  }
+
+  app.addEventListener('click', e => {
+    const b = e.target.closest('[data-act]');
+    if (!b || b.disabled) return;
+    switch (b.dataset.act){
+      case 'retry':  loadInvitation(); break;
+      case 'going':
+        R.going = b.dataset.v === '1';
+        render(); break;
+      case 'count':
+        R.count = Math.min(Math.max(R.count + Number(b.dataset.d), 1), R.inv.max);
+        render(); break;
+      case 'toSeats':
+        R.sel = R.sel.slice(0, R.count);
+        R.step = 'seats'; render();
+        app.scrollIntoView({ behavior:'smooth', block:'start' });
+        break;
+      case 'back':   R.step = 'ask'; render(); break;
+      case 'table':  openSheet(Number(b.dataset.t)); break;
+      case 'unpick': R.sel = R.sel.filter(k => k !== b.dataset.k); render(); break;
+      case 'submit': submit(R.count); break;
+      case 'decline': submit(0); break;
+      case 'edit':
+        R.going = R.inv.status === 'confirmed' ? true : null;
+        R.count = Math.max(R.inv.attending, 1);
+        R.sel = R.inv.seats.map(x => key(x.t, x.s));
+        R.step = 'ask'; render();
+        break;
+    }
+  });
+
+  /* ---- Hoja con la mesa en grande ---- */
+  const sheet = document.getElementById('sheet');
+  const sheetBackdrop = document.getElementById('sheetBackdrop');
+  function renderSheet(){
+    const t = R.sheetT;
+    document.getElementById('sheetTitle').textContent = `Mesa ${t}`;
+    document.getElementById('sheetTable').innerHTML = tableFig(t, 'big');
+    const left = R.count - R.sel.length;
+    document.getElementById('sheetHint').textContent = left > 0
+      ? `Elegidos ${R.sel.length} de ${R.count} · toca ${left === 1 ? 'una silla libre' : left + ' sillas libres'}`
+      : `¡Listo! Elegiste ${R.count === 1 ? 'tu asiento' : 'tus ' + R.count + ' asientos'}`;
+    document.getElementById('sheetPrev').disabled = t <= 1;
+    document.getElementById('sheetNext').disabled = t >= 10;
+  }
+  function openSheet(t){
+    R.sheetT = t;
+    renderSheet();
+    sheet.classList.add('open'); sheetBackdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('sheetDone').focus({ preventScroll:true });
+  }
+  function closeSheet(){
+    R.sheetT = null;
+    sheet.classList.remove('open'); sheetBackdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('sheetTable').addEventListener('click', e => {
+    const b = e.target.closest('[data-seat]');
+    if (b && !b.disabled) togglePick(R.sheetT, Number(b.dataset.seat));
+  });
+  document.getElementById('sheetDone').addEventListener('click', closeSheet);
+  document.getElementById('sheetPrev').addEventListener('click', () => { R.sheetT--; renderSheet(); });
+  document.getElementById('sheetNext').addEventListener('click', () => { R.sheetT++; renderSheet(); });
+  sheetBackdrop.addEventListener('click', closeSheet);
+  addEventListener('keydown', e => { if (e.key === 'Escape' && R.sheetT) closeSheet(); });
+
+  loadInvitation();
 
   /* ---- Lluvia de pétalos ---- */
   function startPetals(){

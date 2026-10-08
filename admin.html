@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel de invitados · Camacho & Jeanette</title>
+<meta name="theme-color" content="#4a0a15">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cinzel:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f7f2ea; --card:#fffdf8; --wine:#8a1a2c; --wine-dark:#4a0a15;
+  --gold:#c9a45c; --gold-dark:#a8823e; --ink:#3b2a26; --muted:#7d6448;
+  --free:#fffdf8; --taken:#8a1a2c; --reserved:#c9a45c;
+  --script:'Pinyon Script', cursive; --serif:'Cormorant Garamond', Georgia, serif; --caps:'Cinzel', Georgia, serif;
+}
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+body{ background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:17px; min-height:100dvh; }
+button, input, select{ font:inherit; }
+.wrap{ max-width:1100px; margin:0 auto; padding:24px 16px 80px; }
+h1{ font-family:var(--script); font-weight:400; font-size:52px; color:var(--wine-dark); line-height:1; }
+h2{ font-family:var(--caps); font-weight:500; font-size:14px; letter-spacing:.24em; color:var(--wine); margin-bottom:14px; }
+.sub{ font-style:italic; color:var(--muted); }
+.card{ background:var(--card); border-radius:16px; padding:20px; box-shadow:0 0 0 1px rgba(201,164,92,.45), 0 14px 30px -22px rgba(74,10,21,.5); }
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:10px 18px; border-radius:999px; border:0; cursor:pointer;
+  background:linear-gradient(160deg, #8a1a2c, #5e0f1c); color:#fbf3e3;
+  font-family:var(--caps); font-size:12px; letter-spacing:.14em;
+}
+.btn.ghost{ background:transparent; color:var(--wine); box-shadow:inset 0 0 0 1px rgba(138,26,44,.4); }
+.btn.small{ padding:6px 12px; font-size:10px; }
+.btn.wa{ background:linear-gradient(160deg, #2a9d5c, #1d7a46); }
+.btn:disabled{ opacity:.5; cursor:default; }
+input, select{
+  width:100%; padding:11px 14px; border-radius:10px;
+  border:1px solid rgba(201,164,92,.7); background:#fff; color:var(--ink);
+}
+input:focus, select:focus{ outline:2px solid rgba(138,26,44,.35); outline-offset:1px; }
+label{ display:block; font-family:var(--caps); font-size:10px; letter-spacing:.2em; color:var(--muted); margin-bottom:6px; }
+
+/* Login */
+.login{ min-height:100dvh; display:grid; place-items:center; padding:16px; }
+.login .card{ width:min(100%, 380px); text-align:center; }
+.login form{ display:grid; gap:12px; margin-top:20px; text-align:left; }
+.err{ color:#b3261e; font-size:15px; min-height:20px; }
+
+/* Encabezado */
+.top{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:12px; margin-bottom:22px; }
+.stats{ display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:22px; }
+.stat{ background:var(--card); border-radius:14px; padding:14px 16px; box-shadow:0 0 0 1px rgba(201,164,92,.4); }
+.stat b{ display:block; font-size:34px; line-height:1; color:var(--wine-dark); font-variant-numeric:lining-nums tabular-nums; }
+.stat span{ font-family:var(--caps); font-size:10px; letter-spacing:.16em; color:var(--muted); }
+.stat.warn{ box-shadow:0 0 0 2px #d9822b; }
+.stat.warn b{ color:#b5651d; }
+
+.grid{ display:grid; gap:22px; }
+@media (min-width:900px){ .grid{ grid-template-columns:1.1fr .9fr; align-items:start; } }
+
+/* Mapa */
+.hall{ display:grid; grid-template-columns:1fr 1fr; gap:14px 18px; }
+.hall-head{ grid-column:1/-1; text-align:center; padding:10px; border-radius:8px; background:#efe0c2; font-family:var(--caps); font-size:11px; letter-spacing:.24em; color:#7d5f27; }
+.tbl{ border-radius:12px; padding:10px; background:#fbf6ec; box-shadow:inset 0 0 0 1px rgba(201,164,92,.35); }
+.tbl h3{ font-family:var(--caps); font-weight:500; font-size:12px; letter-spacing:.16em; color:var(--wine); display:flex; justify-content:space-between; }
+.tbl h3 small{ font-family:var(--serif); letter-spacing:0; font-size:13px; color:var(--muted); }
+.seats{ display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-top:8px; }
+.seat{
+  position:relative; aspect-ratio:1; border-radius:50%; cursor:pointer;
+  border:1.5px solid #b8975a; background:var(--free); color:var(--gold-dark);
+  font-size:12px; font-weight:600; font-variant-numeric:lining-nums;
+}
+.seat.guest{ background:var(--taken); border-color:#5e0f1c; color:#fbf3e3; }
+.seat.reserved{ background:var(--reserved); border-color:var(--gold-dark); color:#fff; }
+.seat:hover{ transform:scale(1.08); }
+.legend{ display:flex; flex-wrap:wrap; gap:14px; margin-top:14px; font-size:14px; color:var(--muted); }
+.legend i{ display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:5px; vertical-align:-1px; border:1.5px solid #b8975a; }
+.legend i.g{ background:var(--taken); border-color:#5e0f1c; } .legend i.r{ background:var(--reserved); }
+
+/* Formulario y lista */
+.new{ display:grid; grid-template-columns:1fr 90px auto; gap:10px; align-items:end; }
+details{ margin-top:14px; }
+summary{ cursor:pointer; color:var(--wine); font-style:italic; }
+textarea{ width:100%; min-height:120px; margin-top:10px; padding:10px; border-radius:10px; border:1px solid rgba(201,164,92,.7); font:inherit; font-size:15px; }
+.filters{ display:flex; gap:8px; flex-wrap:wrap; margin:18px 0 10px; }
+.filters input{ flex:1 1 180px; }
+.filters select{ flex:0 0 150px; }
+.list{ display:grid; gap:10px; }
+.inv{ padding:14px; border-radius:12px; background:#fbf6ec; box-shadow:inset 0 0 0 1px rgba(201,164,92,.35); }
+.inv-top{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+.inv-name{ font-size:20px; font-weight:600; color:var(--wine-dark); line-height:1.2; }
+.inv-meta{ font-size:15px; color:var(--muted); margin-top:2px; font-variant-numeric:lining-nums; }
+.badge{ flex:none; font-family:var(--caps); font-size:9px; letter-spacing:.14em; padding:4px 9px; border-radius:999px; }
+.badge.pending{ background:#efe0c2; color:#7d5f27; }
+.badge.confirmed{ background:#d8efe0; color:#1d6b3f; }
+.badge.declined{ background:#f3d9d9; color:#9b2c2c; }
+.inv-actions{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.code{ font-family:ui-monospace, monospace; font-size:14px; background:#fff; padding:2px 6px; border-radius:6px; }
+.empty{ text-align:center; color:var(--muted); font-style:italic; padding:20px; }
+
+.toast{
+  position:fixed; left:50%; bottom:24px; transform:translate(-50%, 20px); opacity:0;
+  padding:12px 20px; border-radius:999px; background:rgba(74,10,21,.95); color:#fbf3e3;
+  transition:.3s; pointer-events:none; z-index:50; white-space:nowrap;
+}
+.toast.show{ opacity:1; transform:translate(-50%, 0); }
+[hidden]{ display:none !important; }
+</style>
+</head>
+<body>
+
+<!-- ============ ACCESO ============ -->
+<section class="login" id="login">
+  <div class="card">
+    <h1>Camacho &amp; Jeanette</h1>
+    <p class="sub">Panel de invitados</p>
+    <form id="loginForm">
+      <div>
+        <label for="pass">Contraseña</label>
+        <input type="password" id="pass" autocomplete="current-password" required>
+      </div>
+      <p class="err" id="loginErr"></p>
+      <button class="btn" type="submit">Entrar</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ PANEL ============ -->
+<main class="wrap" id="panel" hidden>
+  <div class="top">
+    <div>
+      <h1>Invitados</h1>
+      <p class="sub" id="deadlineTxt"></p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost" type="button" id="refreshBtn">Actualizar</button>
+      <button class="btn ghost" type="button" id="csvBtn">Descargar CSV</button>
+      <button class="btn ghost" type="button" id="logoutBtn">Salir</button>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Mapa de mesas</h2>
+      <p class="sub" style="font-size:15px;margin:-6px 0 14px">Toca un asiento: libre → apartarlo · apartado → liberarlo · invitado → quitárselo.</p>
+      <div class="hall" id="hall"></div>
+      <div class="legend"><span><i></i>Libre</span><span><i class="g"></i>Invitado</span><span><i class="r"></i>Apartado por ustedes</span></div>
+    </section>
+
+    <section class="card">
+      <h2>Invitaciones</h2>
+      <form class="new" id="newForm">
+        <div><label for="newName">Familia o nombre</label><input id="newName" placeholder="Familia Rodríguez Peña" required></div>
+        <div><label for="newMax">Lugares</label><input id="newMax" type="number" min="1" max="10" value="2" required></div>
+        <button class="btn" type="submit">Crear</button>
+      </form>
+      <details>
+        <summary>Crear varias a la vez</summary>
+        <p class="sub" style="font-size:14px;margin-top:8px">Una por línea: <b>Nombre, lugares</b></p>
+        <textarea id="bulk" placeholder="Familia Rodríguez Peña, 5&#10;Juan Pérez López, 1&#10;Familia Trujillo Arana, 4"></textarea>
+        <button class="btn small" type="button" id="bulkBtn" style="margin-top:8px">Crear todas</button>
+      </details>
+
+      <div class="filters">
+        <input type="search" id="search" placeholder="Buscar…">
+        <select id="filter">
+          <option value="all">Todas</option>
+          <option value="pending">Pendientes</option>
+          <option value="confirmed">Confirmadas</option>
+          <option value="declined">No asistirán</option>
+        </select>
+      </div>
+      <div class="list" id="list"></div>
+    </section>
+  </div>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const SUPABASE_URL = 'https://idoecqvqcnpjuwtiaigr.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_dhnyncLr805d9jzgPP0PXw_CxzY21kE';
+  const SITE_URL = location.origin + location.pathname.replace(/admin(\.html)?\/?$/, '');
+
+  async function rpc(fn, args){
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+      method:'POST', headers:{ apikey:SUPABASE_KEY, 'Content-Type':'application/json' }, body:JSON.stringify(args)
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok){ const e = new Error((data && data.message) || 'NETWORK'); throw e; }
+    return data;
+  }
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  const STATUS = { pending:'Pendiente', confirmed:'Confirmó', declined:'No asistirá' };
+  let pass = '';
+  let data = null;
+
+  let toastT;
+  function toast(msg){
+    const t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  // ---------- Acceso ----------
+  try { pass = sessionStorage.getItem('adminPass') || ''; } catch {}
+  $('loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    pass = $('pass').value;
+    $('loginErr').textContent = '';
+    try {
+      await load();
+      try { sessionStorage.setItem('adminPass', pass); } catch {}
+    } catch (err){
+      $('loginErr').textContent = err.message === 'NOT_ADMIN' ? 'Contraseña incorrecta' : 'No se pudo conectar';
+    }
+  });
+  $('logoutBtn').addEventListener('click', () => {
+    try { sessionStorage.removeItem('adminPass'); } catch {}
+    location.reload();
+  });
+
+  async function load(){
+    data = await rpc('admin_overview', { p_password:pass });
+    $('login').hidden = true; $('panel').hidden = false;
+    render();
+  }
+
+  // ---------- Vista ----------
+  function render(){
+    const inv = data.invitations;
+    const seats = data.seats;
+    const guest = seats.filter(s => s.kind === 'guest').length;
+    const reserved = seats.filter(s => s.kind === 'reserved').length;
+    const free = 100 - guest - reserved;
+    const promised = inv.reduce((a, i) => a + (i.status === 'declined' ? 0 : i.status === 'confirmed' ? i.attending : i.max), 0);
+    const count = st => inv.filter(i => i.status === st).length;
+
+    const dl = new Date(data.deadline);
+    $('deadlineTxt').textContent = `Fecha límite: ${dl.toLocaleString('es-MX', { dateStyle:'long', timeStyle:'short' })}`;
+
+    $('stats').innerHTML = [
+      [inv.length, 'Invitaciones'],
+      [count('confirmed'), 'Confirmaron'],
+      [count('pending'), 'Pendientes'],
+      [count('declined'), 'No asistirán'],
+      [guest, 'Asientos de invitados'],
+      [reserved, 'Apartados'],
+      [free, 'Asientos libres'],
+      [promised + reserved, 'Lugares comprometidos', promised + reserved > 100]
+    ].map(([n, l, warn]) => `<div class="stat${warn ? ' warn' : ''}" title="${warn ? 'Los lugares prometidos superan los 100 disponibles' : ''}"><b>${n}</b><span>${l}</span></div>`).join('');
+
+    // mapa
+    const byTable = t => seats.filter(s => s.t === t);
+    const tableHtml = t => {
+      const list = byTable(t);
+      const used = list.filter(s => s.kind !== 'free').length;
+      return `<div class="tbl"><h3>Mesa ${t}<small>${used}/10</small></h3><div class="seats">${list.map(s =>
+        `<button class="seat ${s.kind}" data-t="${s.t}" data-s="${s.s}" title="${esc(s.who || 'Libre')}">${s.s}</button>`).join('')}</div></div>`;
+    };
+    const order = [1,2,3,4,5,6,7,8,9,10];
+    $('hall').innerHTML = `<div class="hall-head">Mesa presidencial · aparte de los 100 lugares</div>` + order.map(tableHtml).join('');
+
+    renderList();
+  }
+
+  function renderList(){
+    const q = $('search').value.trim().toLowerCase();
+    const f = $('filter').value;
+    const items = data.invitations.filter(i => (f === 'all' || i.status === f) && (!q || i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q)));
+    $('list').innerHTML = items.length ? items.map(i => {
+      const seatTxt = i.seats.length ? i.seats.map(s => `M${s.t}-${s.s}`).join(', ') : '—';
+      return `<div class="inv" data-code="${i.code}">
+        <div class="inv-top">
+          <div><div class="inv-name">${esc(i.name)}</div>
+          <div class="inv-meta">${i.status === 'confirmed' ? `${i.attending} de ${i.max} lugares` : `${i.max} ${i.max === 1 ? 'lugar' : 'lugares'}`} · <span class="code">${i.code}</span></div>
+          <div class="inv-meta">Asientos: ${seatTxt}</div></div>
+          <span class="badge ${i.status}">${STATUS[i.status]}</span>
+        </div>
+        <div class="inv-actions">
+          <button class="btn small wa" data-act="wa">WhatsApp</button>
+          <button class="btn small ghost" data-act="copy">Copiar enlace</button>
+          <button class="btn small ghost" data-act="edit">Editar</button>
+          <button class="btn small ghost" data-act="del">Eliminar</button>
+        </div>
+      </div>`;
+    }).join('') : '<p class="empty">No hay invitaciones todavía.</p>';
+  }
+
+  const linkFor = code => `${SITE_URL}?i=${code}`;
+  const waText = i =>
+`¡Hola, ${i.name}! 💌
+
+Con mucho cariño les compartimos la invitación a nuestra boda, el sábado 7 de noviembre de 2026.
+
+Tenemos ${i.max === 1 ? '1 lugar reservado' : i.max + ' lugares reservados'} en su honor. Por favor confirmen su asistencia y elijan sus asientos antes del 15 de octubre en este enlace:
+
+${linkFor(i.code)}
+
+Con amor,
+Camacho & Jeanette`;
+
+  async function copy(text){
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch {
+      const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok;
+    }
+  }
+
+  // ---------- Acciones ----------
+  async function act(fn, args, okMsg){
+    try { await rpc(fn, { p_password:pass, ...args }); await load(); if (okMsg) toast(okMsg); }
+    catch (e){
+      const m = { SEAT_TAKEN:'Ese asiento ya está ocupado', MAX_BELOW_ATTENDING:'Ya confirmaron más personas que ese número', NOT_ADMIN:'Sesión vencida, vuelve a entrar' }[e.message];
+      toast(m || 'Ocurrió un error');
+    }
+  }
+
+  $('newForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const name = $('newName').value.trim(), max = Number($('newMax').value);
+    if (!name || !(max >= 1 && max <= 10)) return;
+    await act('admin_create_invitation', { p_name:name, p_max:max }, 'Invitación creada');
+    $('newName').value = '';
+  });
+
+  $('bulkBtn').addEventListener('click', async () => {
+    const rows = $('bulk').value.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+      const m = l.match(/^(.*?)[,;\t]\s*(\d+)\s*$/);
+      return m ? { name:m[1].trim(), max:Number(m[2]) } : null;
+    });
+    if (!rows.length || rows.some(r => !r || !r.name || r.max < 1 || r.max > 10)){
+      toast('Revisa el formato: Nombre, lugares (1 a 10)'); return;
+    }
+    $('bulkBtn').disabled = true;
+    try {
+      for (const r of rows) await rpc('admin_create_invitation', { p_password:pass, p_name:r.name, p_max:r.max });
+      $('bulk').value = '';
+      toast(`${rows.length} invitaciones creadas`);
+    } catch { toast('Algunas no se pudieron crear'); }
+    $('bulkBtn').disabled = false;
+    await load();
+  });
+
+  $('list').addEventListener('click', async e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const i = data.invitations.find(x => x.code === b.closest('.inv').dataset.code);
+    switch (b.dataset.act){
+      case 'wa':
+        window.open('https://wa.me/?text=' + encodeURIComponent(waText(i)), '_blank', 'noopener');
+        break;
+      case 'copy':
+        toast(await copy(linkFor(i.code)) ? 'Enlace copiado' : 'No se pudo copiar');
+        break;
+      case 'edit': {
+        const name = prompt('Nombre de la invitación:', i.name); if (name === null) return;
+        const max = Number(prompt('Número máximo de lugares (1 a 10):', i.max)); if (!(max >= 1 && max <= 10)) return toast('Número no válido');
+        await act('admin_update_invitation', { p_code:i.code, p_name:name, p_max:max }, 'Invitación actualizada');
+        break;
+      }
+      case 'del':
+        if (confirm(`¿Eliminar la invitación de "${i.name}"? Sus asientos quedarán libres y el enlace dejará de funcionar.`))
+          await act('admin_delete_invitation', { p_code:i.code }, 'Invitación eliminada');
+        break;
+    }
+  });
+
+  $('hall').addEventListener('click', async e => {
+    const b = e.target.closest('.seat'); if (!b) return;
+    const t = Number(b.dataset.t), s = Number(b.dataset.s);
+    const seat = data.seats.find(x => x.t === t && x.s === s);
+    if (seat.kind === 'free'){
+      const label = prompt(`Apartar Mesa ${t}, asiento ${s}.\n¿Para quién? (ej. Padrinos)`, 'Apartado');
+      if (label) await act('admin_set_reserved', { p_table:t, p_seat:s, p_label:label }, 'Asiento apartado');
+    } else if (seat.kind === 'reserved'){
+      if (confirm(`Mesa ${t}, asiento ${s} está apartado para "${seat.who}". ¿Liberarlo?`))
+        await act('admin_set_reserved', { p_table:t, p_seat:s, p_label:null }, 'Asiento liberado');
+    } else {
+      if (confirm(`Mesa ${t}, asiento ${s} es de "${seat.who}". ¿Quitárselo y dejarlo libre?`))
+        await act('admin_release_seat', { p_table:t, p_seat:s }, 'Asiento liberado');
+    }
+  });
+
+  $('search').addEventListener('input', renderList);
+  $('filter').addEventListener('change', renderList);
+  $('refreshBtn').addEventListener('click', () => load().then(() => toast('Actualizado')).catch(() => toast('No se pudo actualizar')));
+
+  $('csvBtn').addEventListener('click', () => {
+    const rows = [['Invitacion', 'Codigo', 'Lugares', 'Estado', 'Asistiran', 'Asientos', 'Enlace']];
+    data.invitations.forEach(i => rows.push([i.name, i.code, i.max, STATUS[i.status], i.attending,
+      i.seats.map(s => `Mesa ${s.t} silla ${s.s}`).join(' | '), linkFor(i.code)]));
+    const csv = '﻿' + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv;charset=utf-8' }));
+    a.download = 'invitados-boda.csv'; a.click();
+  });
+
+  if (pass) load().catch(() => { pass = ''; });
+})();
+</script>
+</body>
+</html>
