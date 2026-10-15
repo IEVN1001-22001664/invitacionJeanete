@@ -158,6 +158,14 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
   color:var(--wax-dark); line-height:1;
 }
 .env-label--bottom{ bottom:max(6vh, 36px); }
+/* Firma del diseñador en el sobre: mínima, al pie */
+.env-credit{
+  position:absolute; left:0; right:0; bottom:max(12px, env(safe-area-inset-bottom)); z-index:5;
+  text-align:center; pointer-events:none;
+  font-family:var(--caps); font-size:8px; letter-spacing:.38em; padding-left:.38em;
+  color:rgba(125,100,72,.5);
+  transition:opacity .5s ease;
+}
 .env-label--bottom span{
   font-family:var(--serif); font-style:italic; font-size:16px;
   color:#8a7258; letter-spacing:.04em;
@@ -229,7 +237,8 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
 .envelope.opening .seal{ animation:none; }
 .envelope.opening .seal-glow{ animation:flash .7s ease forwards; }
 .envelope.opening .hint,
-.envelope.opening .env-label{ opacity:0; }
+.envelope.opening .env-label,
+.envelope.opening .env-credit{ opacity:0; }
 
 .envelope.cracked .seal-half--l{ transform:translate(-70px, 40px) rotate(-28deg); opacity:0; }
 .envelope.cracked .seal-half--r{ transform:translate(70px, 55px) rotate(24deg); opacity:0; }
@@ -1409,6 +1418,8 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
     Toca para abrir
   </div>
 
+  <p class="env-credit">Diseño · APStudio</p>
+
   <div class="env-label env-label--bottom" id="envBottom">
     <span>07 · Noviembre · 2026</span>
   </div>
@@ -1834,7 +1845,7 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
 
     <p class="w-kicker reveal">Confirma tu</p>
     <h2 class="w-title reveal" style="--d:.15s">Asistencia</h2>
-    <p class="rsvp-deadline reveal" style="--d:.3s">Por favor confirma antes del 15 de octubre</p>
+    <p class="rsvp-deadline reveal" style="--d:.3s">Por favor confirma antes del <span id="deadlineTxt">20 de octubre</span></p>
 
     <div id="rsvpApp" aria-live="polite">
       <div class="r-loading" aria-label="Cargando"><i></i><i></i><i></i></div>
@@ -2349,8 +2360,11 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
     sel: [],            // asientos elegidos ('mesa-asiento'), en orden
     busy: false,
     sheetT: null,
-    poll: null
+    poll: null,
+    deadlineTxt: '20 de octubre'   // se reemplaza con la fecha real guardada en Supabase
   };
+
+  const fmtDeadline = iso => new Date(iso).toLocaleDateString('es-MX', { day:'numeric', month:'long', timeZone:'America/Mexico_City' });
 
   const WHATSAPP = '524281075882';
   const waLink = text => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
@@ -2425,7 +2439,7 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
           <div class="r-actions"><button class="g-btn" type="button" data-act="retry">Intentar de nuevo</button></div></div>`;
 
       case 'closed':
-        return `<div class="rsvp-card">${header()}<p class="r-text">El periodo para confirmar terminó el 15 de octubre.<br>Si necesitas ayuda, escríbenos.</p></div>`;
+        return `<div class="rsvp-card">${header()}<p class="r-text">El periodo para confirmar terminó el ${R.deadlineTxt}.<br>Si necesitas ayuda, escríbenos.</p></div>`;
 
       case 'ask': {
         const max = inv.max;
@@ -2481,7 +2495,7 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
           ${inv.status === 'declined' ? '' : `<p class="r-for">${esc(inv.name)}</p>`}
           ${body}
           ${inv.open ? `<div class="r-actions"><button class="r-link" type="button" data-act="edit">Modificar mi confirmación</button>
-            <p class="r-hint">Puedes hacer cambios hasta el 15 de octubre</p></div>` : ''}
+            <p class="r-hint">Puedes hacer cambios hasta el ${R.deadlineTxt}</p></div>` : ''}
         </div>`;
       }
     }
@@ -2521,6 +2535,8 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
     try {
       const [inv] = await Promise.all([ rpc('get_invitation', { p_code:R.code }), refreshMap() ]);
       R.inv = inv;
+      R.deadlineTxt = fmtDeadline(inv.deadline);
+      document.getElementById('deadlineTxt').textContent = R.deadlineTxt;
       personalizeEnvelope(inv.name);
       setContactLink(inv.name);
       if (inv.status !== 'pending') R.step = 'done';

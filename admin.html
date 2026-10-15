@@ -300,7 +300,7 @@ textarea{ width:100%; min-height:120px; margin-top:10px; padding:10px; border-ra
 
 Con mucho cariño les compartimos la invitación a nuestra boda, el sábado 7 de noviembre de 2026.
 
-Tenemos ${i.max === 1 ? '1 lugar reservado' : i.max + ' lugares reservados'} en su honor. Por favor confirmen su asistencia y elijan sus asientos antes del 15 de octubre en este enlace:
+Tenemos ${i.max === 1 ? '1 lugar reservado' : i.max + ' lugares reservados'} en su honor. Por favor confirmen su asistencia y elijan sus asientos antes del ${new Date(data.deadline).toLocaleDateString('es-MX', { day:'numeric', month:'long', timeZone:'America/Mexico_City' })} en este enlace:
 
 ${linkFor(i.code)}
 
