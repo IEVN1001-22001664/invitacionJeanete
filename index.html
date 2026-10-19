@@ -1081,7 +1081,7 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
 .tbl-meta b{ color:#8a1a2c; font-weight:600; }
 
 /* Mesa (sirve tanto en miniatura como en grande) */
-.table-fig{ position:relative; width:100%; aspect-ratio:12/7; }
+.table-fig{ position:relative; width:100%; aspect-ratio:12/8; }
 .table-top{
   position:absolute; left:17%; right:17%; top:25%; bottom:25%;
   border-radius:6px;
@@ -2336,8 +2336,11 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
   const key = (t, s) => t + '-' + s;
   const plural = (n, one, many) => n === 1 ? one : many;
 
-  // Posición de las 10 sillas alrededor de la mesa (x%, y%), en sentido horario
-  const SEAT_POS = [[26.7,11],[43.3,11],[60,11],[76.7,11],[92,50],[76.7,89],[60,89],[43.3,89],[26.7,89],[8,50]];
+  // Posición de las 12 sillas alrededor de la mesa (x%, y%).
+  // 1–4 arriba, 5 y 11 a la derecha, 6–9 abajo, 10 y 12 a la izquierda.
+  // Los asientos 1–10 conservan su lugar original; 11 y 12 se agregaron después.
+  const SEAT_POS = [[26.7,10],[43.3,10],[60,10],[76.7,10],[92,36],[76.7,90],[60,90],[43.3,90],[26.7,90],[8,36],[92,64],[8,64]];
+  const seatExists = (t, s) => !R.map.size || R.map.has(key(t, s));   // solo se dibujan los asientos que existen en la base
 
   const ERRORS = {
     INVALID_CODE:        'No encontramos esta invitación. Revisa el enlace que te enviamos.',
@@ -2376,7 +2379,9 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
 
   function tableFig(t, size){
     const seats = SEAT_POS.map(([x, y], i) => {
-      const s = i + 1, st = seatState(t, s);
+      const s = i + 1;
+      if (!seatExists(t, s)) return '';
+      const st = seatState(t, s);
       const style = `left:${x}%;top:${y}%`;
       if (size === 'mini') return `<span class="seat ${st}" style="${style}"></span>`;
       const label = st === 'taken' ? 'ocupado' : st === 'sel' ? 'elegido' : 'disponible';
@@ -2387,7 +2392,8 @@ a[href^="tel"], a[x-apple-data-detectors]{ color:inherit !important; text-decora
 
   function tableButton(t){
     let free = 0, mine = 0;
-    for (let s = 1; s <= 10; s++){
+    for (let s = 1; s <= SEAT_POS.length; s++){
+      if (!seatExists(t, s)) continue;
       const st = seatState(t, s);
       if (st === 'free') free++;
       if (st === 'sel') mine++;

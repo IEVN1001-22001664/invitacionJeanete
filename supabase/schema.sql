@@ -8,7 +8,7 @@
 --     validan el código de la familia, la fecha límite y la disponibilidad.
 --   · Todas las confirmaciones se procesan una a la vez (candado), así dos
 --     familias nunca pueden quedarse con el mismo asiento.
---   · 10 mesas × 10 asientos = 100 lugares. La mesa presidencial va aparte.
+--   · 10 mesas × 12 asientos = 120 lugares. La mesa presidencial va aparte.
 -- =====================================================================
 
 create extension if not exists pgcrypto with schema extensions;
@@ -29,7 +29,7 @@ create table if not exists public.invitations (
 
 create table if not exists public.seats (
   table_no       int not null check (table_no between 1 and 10),
-  seat_no        int not null check (seat_no  between 1 and 10),
+  seat_no        int not null check (seat_no  between 1 and 12),
   invitation_id  uuid references public.invitations(id) on delete set null,
   reserved_label text,                               -- apartado por los novios (ej. "Padrinos")
   updated_at     timestamptz not null default now(),
@@ -42,9 +42,9 @@ create table if not exists public.settings (
   value text not null
 );
 
--- 100 asientos
+-- 120 asientos (10 mesas × 12)
 insert into public.seats (table_no, seat_no)
-select t, s from generate_series(1,10) t, generate_series(1,10) s
+select t, s from generate_series(1,10) t, generate_series(1,12) s
 on conflict do nothing;
 
 -- Fecha límite: 15 de octubre de 2026, 23:59 hora del centro de México
