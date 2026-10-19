@@ -100,12 +100,88 @@ textarea{ width:100%; min-height:120px; margin-top:10px; padding:10px; border-ra
 .code{ font-family:ui-monospace, monospace; font-size:14px; background:#fff; padding:2px 6px; border-radius:6px; }
 .empty{ text-align:center; color:var(--muted); font-style:italic; padding:20px; }
 
+.card-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+.card-head h2{ margin:0; }
+
+/* ---------- Reorganizar mesas ---------- */
+.arrange{
+  position:fixed; inset:0; z-index:40; overflow:auto;
+  background:var(--paper);
+  padding:16px 12px 150px;
+}
+.ar-wrap{ max-width:980px; margin:0 auto; }
+.ar-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+.ar-top h1{ font-size:44px; }
+.ar-help{ font-size:15px; color:var(--muted); font-style:italic; margin-top:4px; max-width:560px; }
+.ar-hall{ display:grid; grid-template-columns:1fr 1fr; gap:14px 16px; margin-top:18px; }
+.ar-head{ grid-column:1/-1; text-align:center; padding:10px; border-radius:8px; background:#efe0c2; font-family:var(--caps); font-size:11px; letter-spacing:.24em; color:#7d5f27; }
+.ar-tbl{ background:#fbf6ec; border-radius:14px; padding:10px 8px 8px; box-shadow:inset 0 0 0 1px rgba(201,164,92,.35); }
+.ar-fig{ position:relative; width:100%; aspect-ratio:12/8; }
+.ar-table{
+  position:absolute; left:17%; right:17%; top:23%; bottom:23%;
+  border-radius:6px; display:grid; place-items:center; text-align:center;
+  background:linear-gradient(180deg, #ecd9b4, #dcc196);
+  box-shadow:inset 0 0 0 1px rgba(125,95,39,.45);
+  font-family:var(--caps); font-size:12px; letter-spacing:.14em; color:#5e4520; line-height:1.2;
+}
+.ar-table small{ display:block; font-family:var(--serif); font-size:12px; letter-spacing:0; color:#7d6448; }
+.ar-seat{
+  position:absolute; transform:translate(-50%,-50%);
+  width:15.5%; aspect-ratio:1; border-radius:50%; cursor:pointer;
+  border:1.5px solid #b8975a; background:#fffdf8; color:#a8823e;
+  display:grid; place-items:center;
+  font-family:var(--caps); font-weight:500; font-size:clamp(8px, 2.3vw, 13px); letter-spacing:.02em;
+  transition:transform .15s ease, box-shadow .2s ease, opacity .2s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.ar-seat.free{ color:transparent; }
+.ar-seat.free::after{ content:attr(data-n); color:#c9b48c; font-family:var(--serif); font-weight:600; }
+.ar-seat.taken{ color:#fff; border-color:rgba(0,0,0,.25); }
+.ar-seat:hover{ transform:translate(-50%,-50%) scale(1.12); z-index:2; }
+.ar-seat.same{ box-shadow:0 0 0 3px #fffdf8, 0 0 0 5px var(--wine); z-index:2; }
+.ar-seat.sel{ box-shadow:0 0 0 3px #fffdf8, 0 0 0 6px #d9822b; z-index:3; animation:selPulse 1.2s ease-in-out infinite; }
+.has-sel .ar-seat.free{ border-style:dashed; border-color:#d9822b; }
+.has-sel .ar-seat.free::after{ content:'+'; color:#d9822b; font-size:16px; }
+.dimmed .ar-seat.taken:not(.same):not(.sel){ opacity:.35; }
+@keyframes selPulse{ 0%,100%{ transform:translate(-50%,-50%) scale(1.08); } 50%{ transform:translate(-50%,-50%) scale(1.18); } }
+
+.ar-families{ margin-top:24px; }
+.ar-families h2{ margin-bottom:10px; }
+.ar-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+.ar-chip{
+  display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+  padding:5px 12px 5px 5px; border-radius:999px; border:0;
+  background:#fffdf8; box-shadow:inset 0 0 0 1px rgba(201,164,92,.5);
+  font-size:15px; color:var(--ink);
+}
+.ar-chip i{ width:24px; height:24px; border-radius:50%; display:grid; place-items:center; font-style:normal; font-family:var(--caps); font-size:9px; color:#fff; }
+.ar-chip.on{ box-shadow:inset 0 0 0 2px var(--wine); }
+.ar-chip small{ color:var(--muted); font-variant-numeric:lining-nums; }
+
+.ar-bar{
+  position:fixed; left:50%; bottom:max(14px, env(safe-area-inset-bottom)); z-index:45;
+  transform:translateX(-50%);
+  width:min(calc(100% - 24px), 720px);
+  padding:14px 16px; border-radius:16px;
+  background:rgba(74,10,21,.97); color:#fbf3e3;
+  box-shadow:0 16px 36px -12px rgba(0,0,0,.5);
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+}
+.ar-bar .dot{ width:30px; height:30px; flex:none; border-radius:50%; display:grid; place-items:center; font-family:var(--caps); font-size:10px; color:#fff; box-shadow:0 0 0 2px #fbf3e3; }
+.ar-bar .txt{ flex:1 1 220px; font-size:16px; line-height:1.35; }
+.ar-bar .txt b{ color:var(--gold-light, #ecd9a8); }
+.ar-bar .txt small{ display:block; color:rgba(251,243,227,.7); font-size:14px; }
+.ar-bar .btn.ghost{ color:#fbf3e3; box-shadow:inset 0 0 0 1px rgba(251,243,227,.5); }
+.arrange.busy{ cursor:progress; }
+.arrange.busy .ar-seat{ pointer-events:none; }
+
 .toast{
   position:fixed; left:50%; bottom:24px; transform:translate(-50%, 20px); opacity:0;
   padding:12px 20px; border-radius:999px; background:rgba(74,10,21,.95); color:#fbf3e3;
-  transition:.3s; pointer-events:none; z-index:50; white-space:nowrap;
+  transition:.3s; pointer-events:none; z-index:60; white-space:nowrap;
 }
 .toast.show{ opacity:1; transform:translate(-50%, 0); }
+.arrange:not([hidden]) ~ .toast{ bottom:140px; }   /* encima de la barra de reorganizar */
 [hidden]{ display:none !important; }
 </style>
 </head>
@@ -145,7 +221,10 @@ textarea{ width:100%; min-height:120px; margin-top:10px; padding:10px; border-ra
 
   <div class="grid">
     <section class="card">
-      <h2>Mapa de mesas</h2>
+      <div class="card-head">
+        <h2>Mapa de mesas</h2>
+        <button class="btn small" type="button" id="arrangeBtn">Reorganizar mesas</button>
+      </div>
       <p class="sub" style="font-size:15px;margin:-6px 0 14px">Toca un asiento: libre → apartarlo · apartado → liberarlo · invitado → quitárselo.</p>
       <div class="hall" id="hall"></div>
       <div class="legend"><span><i></i>Libre</span><span><i class="g"></i>Invitado</span><span><i class="r"></i>Apartado por ustedes</span></div>
@@ -178,6 +257,25 @@ textarea{ width:100%; min-height:120px; margin-top:10px; padding:10px; border-ra
     </section>
   </div>
 </main>
+
+<!-- ============ REORGANIZAR MESAS ============ -->
+<section class="arrange" id="arrange" hidden aria-label="Reorganizar mesas">
+  <div class="ar-wrap">
+    <div class="ar-top">
+      <div>
+        <h1>Reorganizar mesas</h1>
+        <p class="ar-help">Toca una silla ocupada y luego la silla a donde quieres llevarla. Si la silla destino está libre, se mueve; si está ocupada, las dos personas se intercambian.</p>
+      </div>
+      <button class="btn ghost" type="button" id="arrangeClose">Cerrar</button>
+    </div>
+    <div class="ar-hall" id="arHall"></div>
+    <div class="ar-families">
+      <h2>Familias en el salón</h2>
+      <div class="ar-chips" id="arChips"></div>
+    </div>
+  </div>
+  <div class="ar-bar" id="arBar"></div>
+</section>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -269,7 +367,149 @@ textarea{ width:100%; min-height:120px; margin-top:10px; padding:10px; border-ra
     $('hall').innerHTML = `<div class="hall-head">Mesa presidencial · aparte de los ${seats.length} lugares</div>` + order.map(tableHtml).join('');
 
     renderList();
+    if (!$('arrange').hidden) renderArrange();
   }
+
+  // =========================================================
+  //  Reorganizar mesas
+  // =========================================================
+  // Misma posición de sillas que en la invitación: 1–4 arriba, 5 y 11 derecha, 6–9 abajo, 10 y 12 izquierda
+  const SEAT_POS = [[26.7,10],[43.3,10],[60,10],[76.7,10],[92,36],[76.7,90],[60,90],[43.3,90],[26.7,90],[8,36],[92,64],[8,64]];
+  const PALETTE = ['#8a1a2c','#2f6b5e','#b5651d','#3d5a80','#7b4b94','#6b7a2f','#c0566b','#1f7a8c','#5c4033','#9c6b1f','#4d4f8c','#a33d2f','#2e7d4f','#8c4f7a','#566b78','#7a5c2e'];
+  const RESERVED_COLOR = '#c9a45c';
+  const STOP = new Set(['familia', 'fam', 'fam.', 'de', 'del', 'la', 'las', 'los', 'el', 'y', 'e', 'sr', 'sra', 'sr.', 'sra.']);
+  const AR = { sel:null, focus:null, busy:false };   // sel: 'mesa-silla' elegida · focus: grupo resaltado
+
+  function initials(name){
+    const words = String(name).split(/\s+/).filter(w => w && !STOP.has(w.toLowerCase()));
+    const src = words.length ? words : String(name).split(/\s+/);
+    return (src.slice(0, 2).map(w => w[0]).join('') || '?').toUpperCase();
+  }
+
+  // Quién ocupa cada silla: { group, name, color, ini, kind }
+  function seatOwners(){
+    const owners = new Map();
+    data.invitations.forEach((inv, idx) => {
+      const color = PALETTE[idx % PALETTE.length];
+      inv.seats.forEach(s => owners.set(`${s.t}-${s.s}`, { group:'I:' + inv.code, name:inv.name, color, ini:initials(inv.name), kind:'guest' }));
+    });
+    data.seats.forEach(s => {
+      if (s.kind === 'reserved') owners.set(`${s.t}-${s.s}`, { group:'R:' + s.who, name:s.who + ' (apartado)', color:RESERVED_COLOR, ini:initials(s.who), kind:'reserved' });
+    });
+    return owners;
+  }
+
+  function renderArrange(){
+    const owners = seatOwners();
+    const selOwner = AR.sel ? owners.get(AR.sel) : null;
+    if (AR.sel && !selOwner) AR.sel = null;               // la silla dejó de estar ocupada (otro cambio)
+    const activeGroup = selOwner ? selOwner.group : AR.focus;
+
+    const tables = [...new Set(data.seats.map(s => s.t))].sort((a, b) => a - b);
+    $('arHall').className = 'ar-hall' + (AR.sel ? ' has-sel' : '') + (activeGroup ? ' dimmed' : '');
+    $('arHall').innerHTML = `<div class="ar-head">Mesa presidencial · Novios y familia</div>` + tables.map(t => {
+      const list = data.seats.filter(s => s.t === t);
+      const used = list.filter(s => s.kind !== 'free').length;
+      const seats = list.map(s => {
+        const k = `${t}-${s.s}`, o = owners.get(k), [x, y] = SEAT_POS[s.s - 1] || [50, 50];
+        const cls = ['ar-seat', o ? 'taken' : 'free', k === AR.sel ? 'sel' : '', o && o.group === activeGroup ? 'same' : ''].join(' ');
+        const title = o ? `${o.name} · Mesa ${t}, silla ${s.s}` : `Mesa ${t}, silla ${s.s} · libre`;
+        return `<button type="button" class="${cls}" data-k="${k}" data-n="${s.s}" style="left:${x}%;top:${y}%;${o ? `background:${o.color}` : ''}" title="${esc(title)}" aria-label="${esc(title)}">${o ? esc(o.ini) : ''}</button>`;
+      }).join('');
+      return `<div class="ar-tbl"><div class="ar-fig"><div class="ar-table">Mesa ${t}<small>${used}/${list.length}</small></div>${seats}</div></div>`;
+    }).join('');
+
+    // Leyenda de familias que tienen sillas
+    const groups = new Map();
+    owners.forEach((o, k) => {
+      const g = groups.get(o.group) || { ...o, seats:[] };
+      g.seats.push(k); groups.set(o.group, g);
+    });
+    const sorted = [...groups.values()].sort((a, b) => a.name.localeCompare(b.name, 'es'));
+    $('arChips').innerHTML = sorted.length ? sorted.map(g =>
+      `<button type="button" class="ar-chip${g.group === activeGroup ? ' on' : ''}" data-g="${esc(g.group)}"><i style="background:${g.color}">${esc(g.ini)}</i>${esc(g.name)} <small>· ${g.seats.length}</small></button>`
+    ).join('') : '<p class="empty">Todavía nadie ha elegido sillas.</p>';
+
+    // Barra inferior
+    const fmt = keys => keys.map(k => { const [t, s] = k.split('-'); return `M${t}-${s}`; }).join(', ');
+    if (selOwner){
+      const g = groups.get(selOwner.group);
+      const [t, s] = AR.sel.split('-');
+      $('arBar').innerHTML = `<span class="dot" style="background:${selOwner.color}">${esc(selOwner.ini)}</span>
+        <p class="txt"><b>${esc(selOwner.name)}</b> · Mesa ${t}, silla ${s}<small>Sus sillas: ${fmt(g.seats)} · Toca la silla destino</small></p>
+        <button class="btn small ghost" type="button" data-ar="cancel">Cancelar</button>`;
+    } else if (AR.focus && groups.get(AR.focus)){
+      const g = groups.get(AR.focus);
+      $('arBar').innerHTML = `<span class="dot" style="background:${g.color}">${esc(g.ini)}</span>
+        <p class="txt"><b>${esc(g.name)}</b><small>Sillas: ${fmt(g.seats)} · Toca una de sus sillas para moverla</small></p>
+        <button class="btn small ghost" type="button" data-ar="cancel">Quitar resaltado</button>`;
+    } else {
+      $('arBar').innerHTML = `<p class="txt">Toca una silla ocupada para moverla<small>También puedes tocar una familia de la lista para ver dónde está sentada</small></p>`;
+    }
+  }
+
+  function openArrange(){
+    AR.sel = null; AR.focus = null;
+    $('arrange').hidden = false;
+    document.body.style.overflow = 'hidden';
+    renderArrange();
+    $('arrange').scrollTop = 0;
+  }
+  function closeArrange(){
+    $('arrange').hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  async function moveSeat(from, to){
+    const [ft, fs] = from.split('-').map(Number), [tt, ts] = to.split('-').map(Number);
+    const owners = seatOwners();
+    const who = owners.get(from), other = owners.get(to);
+    AR.busy = true; $('arrange').classList.add('busy');
+    try {
+      await rpc('admin_move_seat', { p_password:pass, p_from_table:ft, p_from_seat:fs, p_to_table:tt, p_to_seat:ts });
+      AR.sel = null;
+      AR.focus = who ? who.group : null;   // deja resaltada a la familia que se movió
+      await load();
+      toast(other ? `Intercambiados: ${who.ini} ↔ ${other.ini}` : `Movido a Mesa ${tt}, silla ${ts}`);
+    } catch (e){
+      const msg = /admin_move_seat/.test(e.message) || /Could not find/.test(e.message)
+        ? 'Falta ejecutar la migración 004 en Supabase'
+        : e.message === 'NOT_ADMIN' ? 'Sesión vencida, vuelve a entrar' : 'No se pudo mover, intenta de nuevo';
+      toast(msg);
+      await load().catch(() => {});
+    }
+    AR.busy = false; $('arrange').classList.remove('busy');
+  }
+
+  $('arrangeBtn').addEventListener('click', openArrange);
+  $('arrangeClose').addEventListener('click', closeArrange);
+  addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || $('arrange').hidden) return;
+    if (AR.sel || AR.focus){ AR.sel = null; AR.focus = null; renderArrange(); } else closeArrange();
+  });
+
+  $('arHall').addEventListener('click', e => {
+    const b = e.target.closest('.ar-seat'); if (!b || AR.busy) return;
+    const k = b.dataset.k;
+    const occupied = b.classList.contains('taken');
+    if (!AR.sel){
+      if (!occupied){ toast('Primero toca una silla ocupada'); return; }
+      AR.sel = k; AR.focus = null; renderArrange(); return;
+    }
+    if (k === AR.sel){ AR.sel = null; renderArrange(); return; }   // tocar la misma silla la suelta
+    moveSeat(AR.sel, k);
+  });
+
+  $('arChips').addEventListener('click', e => {
+    const b = e.target.closest('.ar-chip'); if (!b) return;
+    AR.sel = null;
+    AR.focus = AR.focus === b.dataset.g ? null : b.dataset.g;
+    renderArrange();
+  });
+
+  $('arBar').addEventListener('click', e => {
+    if (e.target.closest('[data-ar="cancel"]')){ AR.sel = null; AR.focus = null; renderArrange(); }
+  });
 
 
   function renderList(){
